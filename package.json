@@ -4,7 +4,7 @@
   "description": "A web and mobile nodejs powered software application that let you build from simple to complex Content Management System (CMS) for FREE.",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "mocha"
   },
   "repository": {
     "type": "git",
@@ -60,5 +60,9 @@
     "underscore": "^1.9.1",
     "vinyl-buffer": "^1.0.1",
     "vinyl-source-stream": "^2.0.0"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "mocha": "^5.2.0"
   }
 }
