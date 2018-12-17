@@ -72,3 +72,21 @@ describe('MySQL table cycle', () => {
             .catch(done);
     })
 });
+
+let mongoConfig = {
+    database: 'mongo'
+};
+
+describe('MongoDB Client connection', () => {
+    it('Should connection to mongodb local database', done => {
+        dbManager(mongoConfig)
+            .checkConnection()
+            .then( ok => {
+                assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
+    });
+});
+
+
