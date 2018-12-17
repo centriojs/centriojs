@@ -1,7 +1,6 @@
 'use strict';
 
-const assert = require('chai').assert,
-    path = require('path');
+const assert = require('chai').assert;
 
 require('../lib/load');
 

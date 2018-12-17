@@ -45,7 +45,9 @@ centrio.config({
     dbName: '',
     dbUser: '',
     dbPass: '',
-    dbPort: '3306'
+    dbPort: '3306',
+    prefix: 'cjs_',
+    secretKey: ''
 });
 
 // Change this to your actual \`Port\` number and \`hostname\`.
