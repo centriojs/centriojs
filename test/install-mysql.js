@@ -1,0 +1,46 @@
+'use strict';
+
+const assert = require('chai').assert;
+
+require('../lib/load');
+
+const {DatabaseManager} = require('../lib/db');
+
+let config = {
+    database: 'mysql',
+    dbName: 'dbxhub',
+    dbUser: 'dbxuser',
+    dbPass: 'dbxpass',
+    secretKey: '52071d25e7ec91dd36bdd5166f01659f'
+};
+
+describe('MySQL: Install database tables', () => {
+    global.dbManager = DatabaseManager(config);
+
+    it('Should install `users` table.', done => {
+        let userQuery = dbManager.execQuery('users');
+
+        let columns = [
+            '`ID` BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT',
+            '`display` VARCHAR(30) NOT NULL',
+            '`email` VARCHAR(50) NOT NULL',
+            '`pass` VARCHAR(100) NOT NULL',
+            '`group` VARCHAR(50) NOT NULL',
+            '`dateRegistered` DATETIME DEFAULT CURRENT_TIMESTAMP'
+        ];
+
+        let sql = 'CREATE TABLE IF NOT EXISTS `' + userQuery.table + '` (' + columns.join(',') + ')engine=InnoDB charset=DEFAULT';
+
+        userQuery.query( sql )
+            .then( ok => {
+                assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should close database.', done => {
+        dbManager.close();
+        done();
+    });
+});
