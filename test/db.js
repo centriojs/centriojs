@@ -74,7 +74,8 @@ describe('MySQL table cycle', () => {
 });
 
 let mongoConfig = {
-    database: 'mongo'
+    database: 'mongo',
+    dbName: 'test-mongo'
 };
 
 describe('MongoDB Client connection', () => {
@@ -83,6 +84,32 @@ describe('MongoDB Client connection', () => {
             .checkConnection()
             .then( ok => {
                 assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Create new table', done => {
+        createDBTable({
+            name: 'test1',
+            columns: {
+                ID: {
+                    type: 'BIGINT',
+                    length: 10,
+                    required: true,
+                    primary: true,
+                    increment: true,
+                    index: true
+                },
+                name: {
+                    type: 'VARCHAR',
+                    required: true,
+                    index: true
+                }
+            }
+        })
+            .then( ok => {
+                assert.isOk(ok, true);
                 done();
             })
             .catch(done);
