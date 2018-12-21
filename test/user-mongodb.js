@@ -18,7 +18,6 @@ describe('MongoDB: User query', () => {
     let userId;
 
     it('Should add new user', function(done) {
-        //this.timeout(5000);
         addUser({
             display: 'nazzy1',
             email: 'nazzy1@local.dev',
@@ -33,24 +32,10 @@ describe('MongoDB: User query', () => {
             .catch(done);
     });
 
-    it(`Should get user where using user ID.`, done => {
+    it(`Should get user where using ID.`, done => {
         getUser(userId)
             .then( user => {
                 assert.equal( user.ID, userId );
-                done();
-            })
-            .catch(done);
-    });
-
-    it('Should update user group into admin', function(done) {
-        this.timeout(3000);
-
-        updateUserData({ID: userId, group: 'admin'})
-            .then( () => {
-                return getUser(userId);
-            })
-            .then( user => {
-                assert.equal( user.group, 'admin' );
                 done();
             })
             .catch(done);
@@ -60,6 +45,20 @@ describe('MongoDB: User query', () => {
         getUserBy( 'email', 'nazzy1@local.dev' )
             .then( user => {
                 assert.equal( user.email, 'nazzy1@local.dev' );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should update user group into admin', function(done) {
+        this.timeout(5000);
+
+        updateUserData({ID: userId, group: 'admin'})
+            .then( () => {
+                return getUser(userId);
+            })
+            .then( user => {
+                assert.equal( user.group, 'admin' );
                 done();
             })
             .catch(done);
@@ -76,27 +75,93 @@ describe('MongoDB: User query', () => {
             .catch(done);
     });
 
-    it('Should get users with no filter', done => {
-        getUsers()
+    let ids = [];
+    it('Should get users with no filter', async function() {
+        this.timeout(10000);
+
+        let users = ['nash'];
+
+        for ( let i = 1; i <= 6; i++ ) {
+            let user = users + i;
+
+            let id = await addUser({
+                display: user,
+                email: user + '@local.dev',
+                pass: user + '12345',
+                group: 'subscriber'
+            }).catch(returnFalse);
+
+            if ( id > 0 ) {
+                ids.push(id);
+            }
+        }
+
+        return getUsers()
             .then( users => {
+                assert.isArray(users);
+            });
+    });
+
+    it('Should get users where group=subscriber', done => {
+        getUsers({group: 'subscriber'})
+            .then( users => {
+                let notMatch = false;
+
+                users.map( user => {
+                    if ( 'subscriber' !== user.group ) {
+                        notMatch = true;
+                    }
+                });
+
+                assert.isFalse( notMatch, true );
                 done();
             })
             .catch(done);
     });
 
-    it('Should delete user base on ID', done => {
-        deleteUser(userId)
-            .then( ok => {
-                done();
-            })
-            .catch(done);
-    });
-
-    it('Should return empty when getting users where display=nazzy', done => {
-        getUsers({display: 'nazzy'})
+    it('Should get users ID in page 1', done => {
+        getUsers({
+            perPage: 3,
+            fields: 'ids'
+        })
             .then( users => {
                 console.log(users);
+                assert.equal( 3, users.length );
+                done();
+            })
+            .catch(done);
+    });
 
+    it('Should get users ID in page 2', done => {
+        getUsers({
+            perPage: 3,
+            page: 2,
+            fields: 'ids'
+        })
+            .then( users => {
+                console.log(users);
+                assert.equal(3, users.length);
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should delete all users', done => {
+        userQuery().query()
+            .then( ({db, collection, client}) => {
+                return new Promise( (res, rej) => {
+                    collection.deleteMany({}, {}, (err, results) => {
+                        client.close();
+
+                        if ( err) {
+                            rej(err);
+                        }
+
+                        res(results);
+                    });
+                })
+            })
+            .then( ok => {
                 done();
             })
             .catch(done);
