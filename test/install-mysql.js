@@ -26,12 +26,33 @@ describe('MySQL: Install database tables', () => {
             '`email` VARCHAR(50) NOT NULL',
             '`pass` VARCHAR(100) NOT NULL',
             '`group` VARCHAR(50) NOT NULL',
-            '`dateRegistered` DATETIME DEFAULT CURRENT_TIMESTAMP'
+            '`dateRegistered` DATETIME DEFAULT CURRENT_TIMESTAMP',
+            'Index (`ID`, `email`, `group`)'
         ];
 
         let sql = 'CREATE TABLE IF NOT EXISTS `' + userQuery.table + '` (' + columns.join(',') + ')engine=InnoDB charset=DEFAULT';
 
         userQuery.query( sql )
+            .then( ok => {
+                assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should install user_settings table', done => {
+        let userSettings = dbManager.execQuery('user_settings');
+
+        let columns = [
+            '`userId` BIGINT(20) NOT NULL PRIMARY KEY',
+            '`name` VARCHAR(50) NOT NULL',
+            '`value` LONGTEXT',
+            'Index (`userId`, `name`)'
+        ];
+
+        let sql = 'CREATE TABLE IF NOT EXISTS `' + userSettings.table + '` (' + columns.join(',') + ')engine=InnoDB charset=DEFAULT';
+
+        userSettings.query( sql )
             .then( ok => {
                 assert.isOk( ok, true );
                 done();

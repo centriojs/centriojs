@@ -72,6 +72,67 @@ describe('MySQL: User Query', () => {
             .catch(done);
     });
 
+    it('Should set user setting', done => {
+        setUserSetting( userId, 'test101', 'irene' )
+            .then( ok => {
+                //assert.isOk( ok, true );
+                done();
+            })
+            .catch( err => {
+                console.log(err);
+                done();
+            });
+    });
+
+    it('Should get user setting where name=test101', done => {
+        getUserSetting( userId, 'test101' )
+            .then( setting => {
+                assert.equal( setting, 'irene' );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should update setting value from irene=nash', done => {
+        setUserSetting( userId, 'test101', 'nash' )
+            .then( async () => {
+                let setting = await getUserSetting( userId, 'test101' ).catch(returnFalse);
+
+                assert.equal(setting, 'nash');
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should update setting value into an object', done => {
+        setUserSetting( userId, 'test101', {
+            name: 'irene',
+            key: 'keys'
+        })
+            .then( ok => {
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should return an object as setting value', done => {
+        getUserSetting( userId, 'test101' )
+            .then( value => {
+                assert.isObject( value, true );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should delete user setting', done => {
+        deleteUserSetting( userId, 'test101' )
+            .then( ok => {
+                assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
+    });
+
     it('Should delete user base on ID', function(done) {
         this.timeout(3000);
 
