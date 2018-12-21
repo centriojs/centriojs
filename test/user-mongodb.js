@@ -18,7 +18,7 @@ describe('MongoDB: User query', () => {
     let userId;
 
     it('Should add new user', function(done) {
-        this.timeout(5000);
+        //this.timeout(5000);
         addUser({
             display: 'nazzy1',
             email: 'nazzy1@local.dev',
@@ -33,21 +33,70 @@ describe('MongoDB: User query', () => {
             .catch(done);
     });
 
-    it('Should update `display` field.', done => {
-        updateUserData({
-            ID: userId,
-            display: 'nash',
-            group: 'admin'
-        })
+    it(`Should get user where using user ID.`, done => {
+        getUser(userId)
+            .then( user => {
+                assert.equal( user.ID, userId );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should update user group into admin', function(done) {
+        this.timeout(3000);
+
+        updateUserData({ID: userId, group: 'admin'})
+            .then( () => {
+                return getUser(userId);
+            })
+            .then( user => {
+                assert.equal( user.group, 'admin' );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should get user where email=nazzy1@local.dev', done => {
+        getUserBy( 'email', 'nazzy1@local.dev' )
+            .then( user => {
+                assert.equal( user.email, 'nazzy1@local.dev' );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should delete user base on ID', function(done) {
+        this.timeout(3000);
+
+        deleteUser(userId)
+            .then( ok => {
+                assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should get users with no filter', done => {
+        getUsers()
+            .then( users => {
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should delete user base on ID', done => {
+        deleteUser(userId)
             .then( ok => {
                 done();
             })
             .catch(done);
     });
 
-    it('Should delete this user', done => {
-        deleteUser(userId)
-            .then( ok => {
+    it('Should return empty when getting users where display=nazzy', done => {
+        getUsers({display: 'nazzy'})
+            .then( users => {
+                console.log(users);
+
                 done();
             })
             .catch(done);

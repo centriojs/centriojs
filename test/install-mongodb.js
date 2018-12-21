@@ -15,7 +15,9 @@ global.dbManager = DatabaseManager(config);
 
 describe('MongoDB: Install collections', () => {
 
-    it('Should install `users` collection', done => {
+    it('Should install `users` collection', function(done) {
+        this.timeout(3000);
+
         let schema = {
             validator: {
                 $jsonSchema: {
@@ -51,17 +53,22 @@ describe('MongoDB: Install collections', () => {
 
         let userQuery = dbManager.execQuery('users');
 
-        userQuery.then( query => {
-            return query.db.createCollection( query.table, schema, err => {
-                if ( err ) {
-                    console.log(err);
-                }
+        userQuery.query()
+            .then( ({db, collection, client}) => {
+                return new Promise( (res, rej) => {
+                    db.createCollection( userQuery.table, schema, err => {
+                        if ( err ) {
+                            rej(err);
+                        }
 
-                query.close();
-
+                        client.close();
+                        res(true);
+                    });
+                });
+            })
+            .then( ok => {
                 done();
-            } );
-        })
+            })
             .catch(done);
     });
 });

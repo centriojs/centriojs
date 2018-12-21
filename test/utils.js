@@ -15,5 +15,11 @@ describe('addQueryParam', () => {
         console.log(add1);
         assert.isOk( added, true );
         done();
+
+        let arr = ['one', 'two', 'three'],
+            val = arr.fill(true);
+        arr = _.object(arr, val);//.range(0, arr.length).fill(true));
+
+        console.log(arr);
     });
 });
