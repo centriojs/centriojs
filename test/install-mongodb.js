@@ -61,12 +61,80 @@ describe('MongoDB: Install collections', () => {
                             rej(err);
                         }
 
-                        client.close();
-                        res(true);
+                        //client.close();
+                        //res(true);
+
+                        collection.createIndex({
+                            ID: 1,
+                            display: 1,
+                            email: 1
+                        }, err => {
+                            client.close();
+
+                            if ( err ) {
+                                rej(err);
+                            }
+
+                            res(true);
+                        });
                     });
                 });
             })
             .then( ok => {
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should install user_settings collection', done => {
+        let schema = {
+            validator: {
+                $jsonSchema: {
+                    bsonType: 'object',
+                    required: ['userId', 'name'],
+                    properties: {
+                        userId: {
+                            bsonType: 'int'
+                        },
+                        name: {
+                            bsonType: 'string',
+                            maximum: 50
+                        },
+                        value: {
+                            bsonType: 'string'
+                        }
+                    }
+                }
+            }
+        };
+
+        let settingQuery = dbManager.execQuery('user_settings');
+
+        settingQuery.query()
+            .then( ({db, collection, client}) => {
+                return new Promise( (res, rej) => {
+                    db.createCollection( settingQuery.table, schema, err => {
+                        if ( err ) {
+                            rej(err);
+                        }
+
+                        collection.createIndex({
+                            userId: 1,
+                            name: 1
+                        }, err => {
+                            client.close();
+
+                            if (err) {
+                                rej(err);
+                            }
+
+                            res(true);
+                        });
+                    } );
+                });
+            })
+            .then( ok => {
+                assert.isOk( ok, true );
                 done();
             })
             .catch(done);

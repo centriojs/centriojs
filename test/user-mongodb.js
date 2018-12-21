@@ -70,6 +70,42 @@ describe('MongoDB: User query', () => {
             .catch(done);
     });
 
+    it('Should set user setting', done => {
+        setUserSetting( userId, 'test101', 'irene1' )
+            .then( ok => {
+                assert.isOk(ok, true);
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should get user setting where name=test101', done => {
+        getUserSetting( userId, 'test101' )
+            .then( setting => {
+                assert.equal( setting, 'irene1' );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should get all users settings', done => {
+        getUserSettings(userId)
+            .then( settings => {
+                console.log(settings);
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should delete user setting', done => {
+        deleteUserSetting( userId, 'test101' )
+            .then( ok => {
+                assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
+    });
+
     it('Should delete user base on ID', function(done) {
         this.timeout(3000);
 
@@ -112,8 +148,6 @@ describe('MongoDB: User query', () => {
         getUsers({group: 'subscriber'})
             .then( users => {
                 let notMatch = false;
-
-                console.log(users[0]);
 
                 users.map( user => {
                     if ( 'subscriber' !== user.group ) {
