@@ -17,6 +17,12 @@ global.dbManager = DatabaseManager(config);
 describe('MongoDB: User query', () => {
     let userId;
 
+    Filter.on( 'getUser', function test1(user) {
+        user.name = 'nash';
+
+        return user;
+    });
+
     it('Should add new user', function(done) {
         addUser({
             display: 'nazzy1',
@@ -106,6 +112,8 @@ describe('MongoDB: User query', () => {
         getUsers({group: 'subscriber'})
             .then( users => {
                 let notMatch = false;
+
+                console.log(users[0]);
 
                 users.map( user => {
                     if ( 'subscriber' !== user.group ) {

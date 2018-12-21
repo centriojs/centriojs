@@ -19,6 +19,12 @@ global.dbManager = DatabaseManager(config);
 describe('MySQL: User Query', () => {
     let userId;
 
+    Filter.on( 'getUser', function test1(user) {
+        user.name = 'nash';
+
+        return user;
+    });
+
     it('Should add new user', function(done) {
         addUser({
             display: 'nazzy1',
