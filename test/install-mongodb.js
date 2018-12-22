@@ -187,4 +187,67 @@ describe('MongoDB: Install collections', () => {
             })
             .catch(done);
     });
+
+    it('Should install preset collection', done => {
+        let schema = {
+            validator: {
+                $jsonSchema: {
+                    bsonType: 'object',
+                    required: ['name', 'type', 'location'],
+                    properties: {
+                        name: {
+                            bsonType: 'string',
+                            maximum: 60
+                        },
+                        type: {
+                            bsonType: 'enum',
+                            enum: ['template', 'module', 'menu'],
+                            default: 'template'
+                        },
+                        location: {
+                            bsonType: 'string',
+                            maximum: 100
+                        },
+                        contentType: {
+                            bsonType: 'string',
+                            maximum: 60
+                        },
+                        properties: {
+                            bsonType: 'object'
+                        },
+                        modules: {
+                            bsonType: 'object'
+                        },
+                        menu: {
+                            bsonType: 'object'
+                        }
+                    }
+                }
+            }
+        };
+
+        let presetQuery = dbManager.execQuery('presets');
+
+        presetQuery.query()
+            .then( ({db, collection, client}) => {
+                return db.createCollection( presetQuery.table, schema )
+                    .then( ok => {
+                        return collection.createIndex({
+                            name: 1,
+                            type: 1,
+                            location: 1,
+                            contentType: 1
+                        })
+                            .then( ok => {
+                                client.close();
+
+                                done();
+                            });
+                    })
+                    .catch( err => {
+                        client.close();
+                        done();
+                    });
+            });
+    });
 });
