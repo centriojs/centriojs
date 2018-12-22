@@ -79,6 +79,31 @@ describe('MySQL: Install database tables', () => {
             .catch(done);
     });
 
+    it('Should install presets table', done => {
+        let presetQuery = dbManager.execQuery('presets');
+
+        let columns = [
+            '`ID` BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT',
+            '`name` VARCHAR(60) NOT NULL',
+            '`type` ENUM ("template", "module", "menu") DEFAULT "template"',
+            '`location` VARCHAR(100) NOT NULL',
+            '`contentType` VARCHAR(60) NOT NULL DEFAULT "global"',
+            '`properties` LONGTEXT',
+            '`modules` LONGTEXT',
+            '`menu` LONGTEXT',
+            'Index (`ID`, `name`, `type`)'
+        ];
+
+        let sql = 'CREATE TABLE IF NOT EXISTS `' + presetQuery.table + '` (' + columns.join(', ') + ')engine=InnoDB charset=DEFAULT';
+
+        presetQuery.query(sql)
+            .then( ok => {
+                assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
+    });
+
     it('Should close database.', done => {
         dbManager.close();
         done();

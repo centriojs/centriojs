@@ -58,11 +58,9 @@ describe('MongoDB: Install collections', () => {
                 return new Promise( (res, rej) => {
                     db.createCollection( userQuery.table, schema, err => {
                         if ( err ) {
+                            client.close();
                             rej(err);
                         }
-
-                        //client.close();
-                        //res(true);
 
                         collection.createIndex({
                             ID: 1,
@@ -115,6 +113,7 @@ describe('MongoDB: Install collections', () => {
                 return new Promise( (res, rej) => {
                     db.createCollection( settingQuery.table, schema, err => {
                         if ( err ) {
+                            client.close();
                             rej(err);
                         }
 
@@ -132,6 +131,55 @@ describe('MongoDB: Install collections', () => {
                         });
                     } );
                 });
+            })
+            .then( ok => {
+                assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should install settings collection', done => {
+        let schema = {
+            validator: {
+                $jsonSchema: {
+                    bsonType: 'object',
+                    required: ['name'],
+                    properties: {
+                        name: {
+                            bsonType: 'string',
+                            maximum: 60
+                        },
+                        value: {
+                            bsonType: 'string'
+                        }
+                    }
+                }
+            }
+        };
+
+        let settingQuery = dbManager.execQuery('settings');
+
+        settingQuery.query()
+            .then( ({db, collection, client}) => {
+                return new Promise( (res, rej) => {
+                    db.createCollection( settingQuery.table, schema, (err, results) => {
+                        if (err) {
+                            client.close();
+                            rej(err);
+                        }
+
+                        collection.createIndex({name: 1}, (err, results) => {
+                            client.close();
+
+                            if (err) {
+                                rej(err);
+                            }
+
+                            res(results);
+                        });
+                    });
+                })
             })
             .then( ok => {
                 assert.isOk( ok, true );
