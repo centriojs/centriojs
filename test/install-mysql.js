@@ -84,7 +84,7 @@ describe('MySQL: Install database tables', () => {
 
         let columns = [
             '`ID` BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT',
-            '`name` VARCHAR(60) NOT NULL',
+            '`name` VARCHAR(60) NOT NULL UNIQUE',
             '`type` ENUM ("template", "module", "menu") DEFAULT "template"',
             '`location` VARCHAR(100) NOT NULL',
             '`contentType` VARCHAR(60) NOT NULL DEFAULT "global"',

@@ -71,19 +71,19 @@ describe('MySQL preset queries', () => {
             name: 'Preset 1',
             type: 'template',
             location: 'with-left-sidebar'
-        });
+        }).catch(returnFalse);
 
         await addPreset({
             name: 'Preset 2',
             type: 'module',
             location: 'left-sidebar'
-        });
+        }).catch(returnFalse);
 
         await addPreset({
             name: 'Preset 3',
             type: 'menu',
             location: 'primary'
-        });
+        }).catch(returnFalse);
 
         return getPresets({type: 'template'})
             .then( results => {
