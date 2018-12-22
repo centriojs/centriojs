@@ -104,6 +104,36 @@ describe('MySQL: Install database tables', () => {
             .catch(done);
     });
 
+    it('Should install content_types table', done => {
+        let contentTypeQuery = dbManager.execQuery('content_types');
+
+        let columns = [
+            '`ID` BIGINT(20) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT',
+            '`name` VARCHAR(60) NOT NULL',
+            '`status` ENUM ("active", "inactive") DEFAULT "active"',
+            '`public` SMALLINT(1)',
+            '`hasCategories` SMALLINT(1)',
+            '`hasTags` SMALLINT(1)',
+            '`hasArchive` SMALLINT(1)',
+            '`archiveTemplate` BIGINT(20)',
+            '`categoryTemplate` BIGINT(20)',
+            '`tagTemplate` BIGINT(20)',
+            '`slug` VARCHAR(255)',
+            '`fields` VARCHAR(255)'
+        ];
+
+        let sql = 'CREATE TABLE IF NOT EXISTS `' + contentTypeQuery.table + '` (' + columns.join(', ') + ')engine=InnoDB charset=DEFAULT';
+
+       // contentTypeQuery.query(`DROP TABLE ${contentTypeQuery.table}`);
+
+        contentTypeQuery.query(sql)
+            .then( ok => {
+                assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
+    });
+
     it('Should close database.', done => {
         dbManager.close();
         done();
