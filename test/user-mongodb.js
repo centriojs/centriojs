@@ -88,6 +88,26 @@ describe('MongoDB: User query', () => {
             .catch(done);
     });
 
+    it('Should update setting value into an object', done => {
+        setUserSetting( userId, 'test101', {
+            name: 'irene',
+            key: 'keys'
+        })
+            .then( ok => {
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should return an object as setting value', done => {
+        getUserSetting( userId, 'test101' )
+            .then( value => {
+                assert.isObject( value, true );
+                done();
+            })
+            .catch(done);
+    });
+
     it('Should get all users settings', done => {
         getUserSettings(userId)
             .then( settings => {
@@ -97,8 +117,17 @@ describe('MongoDB: User query', () => {
             .catch(done);
     });
 
-    it('Should delete user setting', done => {
+    it('Should delete user setting where name=test101', done => {
         deleteUserSetting( userId, 'test101' )
+            .then( ok => {
+                assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should delete all settings', done => {
+        deleteUserSettings(userId)
             .then( ok => {
                 assert.isOk( ok, true );
                 done();

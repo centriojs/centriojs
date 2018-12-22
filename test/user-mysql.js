@@ -73,32 +73,18 @@ describe('MySQL: User Query', () => {
     });
 
     it('Should set user setting', done => {
-        setUserSetting( userId, 'test101', 'irene' )
+        setUserSetting( userId, 'test101', 'irene1' )
             .then( ok => {
-                //assert.isOk( ok, true );
-                done();
-            })
-            .catch( err => {
-                console.log(err);
-                done();
-            });
-    });
-
-    it('Should get user setting where name=test101', done => {
-        getUserSetting( userId, 'test101' )
-            .then( setting => {
-                assert.equal( setting, 'irene' );
+                assert.isOk(ok, true);
                 done();
             })
             .catch(done);
     });
 
-    it('Should update setting value from irene=nash', done => {
-        setUserSetting( userId, 'test101', 'nash' )
-            .then( async () => {
-                let setting = await getUserSetting( userId, 'test101' ).catch(returnFalse);
-
-                assert.equal(setting, 'nash');
+    it('Should get user setting where name=test101', done => {
+        getUserSetting( userId, 'test101' )
+            .then( setting => {
+                assert.equal( setting, 'irene1' );
                 done();
             })
             .catch(done);
@@ -124,8 +110,26 @@ describe('MySQL: User Query', () => {
             .catch(done);
     });
 
-    it('Should delete user setting', done => {
+    it('Should get all users settings', done => {
+        getUserSettings(userId)
+            .then( settings => {
+                console.log(settings);
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should delete user setting where name=test101', done => {
         deleteUserSetting( userId, 'test101' )
+            .then( ok => {
+                assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should delete all settings', done => {
+        deleteUserSettings(userId)
             .then( ok => {
                 assert.isOk( ok, true );
                 done();
