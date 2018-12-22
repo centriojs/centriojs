@@ -60,6 +60,25 @@ describe('MySQL: Install database tables', () => {
             .catch(done);
     });
 
+    it('Should create settings table', done => {
+        let settingQuery = dbManager.execQuery('settings');
+
+        let columns = [
+            '`name` VARCHAR(60) NOT NULL PRIMARY KEY',
+            '`value` LONGTEXT',
+            'Index (`name`)'
+        ];
+
+        let sql = 'CREATE TABLE IF NOT EXISTS `' + settingQuery.table + '` (' + columns.join(',') + ')engine=InnoDB charset=DEFAULT';
+
+        settingQuery.query(sql)
+            .then( ok => {
+                assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
+    });
+
     it('Should close database.', done => {
         dbManager.close();
         done();
