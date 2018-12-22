@@ -162,24 +162,20 @@ describe('MongoDB: Install collections', () => {
 
         settingQuery.query()
             .then( ({db, collection, client}) => {
-                return new Promise( (res, rej) => {
-                    db.createCollection( settingQuery.table, schema, (err, results) => {
-                        if (err) {
-                            client.close();
-                            rej(err);
-                        }
+                return db.createCollection( settingQuery.table, schema )
+                    .then( ok => {
+                        return collection.createIndex({name: 1});
+                    })
+                    .then( ok => {
+                        client.close();
 
-                        collection.createIndex({name: 1}, (err, results) => {
-                            client.close();
+                        return ok;
+                    })
+                    .catch( err => {
+                        client.close();
 
-                            if (err) {
-                                rej(err);
-                            }
-
-                            res(results);
-                        });
+                        return err;
                     });
-                })
             })
             .then( ok => {
                 assert.isOk( ok, true );
@@ -249,5 +245,85 @@ describe('MongoDB: Install collections', () => {
                         done();
                     });
             });
+    });
+
+    it('Should install content_types collection', done => {
+        let schema = {
+            validator: {
+                $jsonSchema: {
+                    bsonType: 'object',
+                    required: ['name', 'status', 'fields'],
+                    properties: {
+                        ID: {
+                            bsonType: 'int'
+                        },
+                        name: {
+                            bsonType: 'string',
+                            maximum: 60
+                        },
+                        status: {
+                            bsonType: 'enum',
+                            enum: ['active', 'inactive'],
+                            default: 'active'
+                        },
+                        public: {
+                            bsonType: 'bool'
+                        },
+                        hasCategories: {
+                            bsonType: 'bool'
+                        },
+                        hasTags: {
+                            bsonType: 'bool'
+                        },
+                        hasArchive: {
+                            bsonType: 'bool'
+                        },
+                        archiveTemplate: {
+                            bsonType: 'int'
+                        },
+                        categoryTemplate: {
+                            bsonType: 'int'
+                        },
+                        tagTemplate: {
+                            bsonType: 'int'
+                        },
+                        slug: {
+                            bsonType: 'string'
+                        },
+                        fields: {
+                            bsonType: 'array'
+                        }
+                    }
+                }
+            }
+        };
+
+        let typeQuery = dbManager.execQuery('content_types');
+
+        typeQuery.query()
+            .then( ({db, collection, client}) => {
+                return db.createCollection( typeQuery.table, schema )
+                    .then( () => {
+                        return collection.createIndex({
+                            name: 1,
+                            slug: 1,
+                            public: 1
+                        })
+                            .then( ok => {
+                                client.close();
+
+                                return ok;
+                            });
+                    })
+                    .catch( err => {
+                        client.close();
+                        return err;
+                    })
+            })
+            .then( ok => {
+                assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
     });
 });
