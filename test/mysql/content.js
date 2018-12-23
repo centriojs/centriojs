@@ -22,7 +22,8 @@ describe( 'MySQL content type and content queries', () => {
     it('Should add new content type name=tester', done => {
         addContentType({
             name: 'tester',
-            public: true
+            public: true,
+            hasComments: true
         })
             .then( id => {
                 typeId = id;
@@ -32,6 +33,8 @@ describe( 'MySQL content type and content queries', () => {
             })
             .catch(done);
     });
+
+    // Insert content here
 
     it('Should update the fields column', done => {
         updateContentType({
@@ -58,6 +61,8 @@ describe( 'MySQL content type and content queries', () => {
             .catch(done);
     });
 
+    let ids = [];
+
     it('Should get all content types with no filter', async function() {
         this.timeout(5000);
 
@@ -67,14 +72,26 @@ describe( 'MySQL content type and content queries', () => {
             slug: 'blog',
             hasCategories: true,
             hasTags: true
-        }).catch(returnFalse);
+        })
+            .then( id => {
+                ids.push(id);
+
+                return id;
+            })
+            .catch(returnFalse);
 
         await addContentType({
             name: 'Test 2',
             slug: 'tester',
             hasCategories: true,
             hasTags: true
-        }).catch(returnFalse);
+        })
+            .then( id => {
+                ids.push(id);
+
+                return id;
+            })
+            .catch(returnFalse);
 
         await addContentType({
             name: 'Test 3',
@@ -82,7 +99,13 @@ describe( 'MySQL content type and content queries', () => {
             slug: 'docs',
             hasCategories: true,
             hasTags: true
-        }).catch(returnFalse);
+        })
+            .then( id => {
+                ids.push(id);
+
+                return id;
+            })
+            .catch(returnFalse);
 
         return getContentTypes()
             .then( results => {
@@ -109,7 +132,17 @@ describe( 'MySQL content type and content queries', () => {
             .catch(done);
     });
 
-    it('Should database connection', done => {
+    it('Should delete all content types', async () => {
+        for ( let i = 0; i < ids.length; i++ ) {
+            let id = ids[i];
+
+            await deleteContentType(id).catch(errorHandler);
+        }
+
+        return true;
+    });
+
+    it('Should close database connection', done => {
         dbManager.close();
         done();
     });
