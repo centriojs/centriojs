@@ -30,9 +30,7 @@ describe('MySQL: Install database tables', () => {
             'Index (`ID`, `email`, `group`)'
         ];
 
-        let sql = 'CREATE TABLE IF NOT EXISTS `' + userQuery.table + '` (' + columns.join(',') + ')engine=InnoDB charset=DEFAULT';
-
-        userQuery.query( sql )
+        userQuery.createTable(columns)
             .then( ok => {
                 assert.isOk( ok, true );
                 done();
@@ -50,9 +48,7 @@ describe('MySQL: Install database tables', () => {
             'Index (`userId`, `name`)'
         ];
 
-        let sql = 'CREATE TABLE IF NOT EXISTS `' + userSettings.table + '` (' + columns.join(',') + ')engine=InnoDB charset=DEFAULT';
-
-        userSettings.query( sql )
+        userSettings.createTable(columns)
             .then( ok => {
                 assert.isOk( ok, true );
                 done();
@@ -69,18 +65,14 @@ describe('MySQL: Install database tables', () => {
             'Index (`name`)'
         ];
 
-        let sql = 'CREATE TABLE IF NOT EXISTS `' + settingQuery.table + '` (' + columns.join(',') + ')engine=InnoDB charset=DEFAULT';
-
-        settingQuery.query(sql)
+        settingQuery.createTable(columns)
             .then( ok => {
                 assert.isOk( ok, true );
                 done();
-            })
-            .catch(done);
+            });
     });
 
     it('Should install presets table', done => {
-        let presetQuery = dbManager.execQuery('presets');
 
         let columns = [
             '`ID` BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT',
@@ -94,9 +86,9 @@ describe('MySQL: Install database tables', () => {
             'Index (`ID`, `name`, `type`)'
         ];
 
-        let sql = 'CREATE TABLE IF NOT EXISTS `' + presetQuery.table + '` (' + columns.join(', ') + ')engine=InnoDB charset=DEFAULT';
+        let presetQuery = dbManager.execQuery('presets');
 
-        presetQuery.query(sql)
+        presetQuery.createTable(columns)
             .then( ok => {
                 assert.isOk( ok, true );
                 done();
@@ -116,6 +108,8 @@ describe('MySQL: Install database tables', () => {
             '`hasTags` SMALLINT(1)',
             '`hasArchive` SMALLINT(1)',
             '`hasComments` SMALLINT(1)',
+            '`commentStatus` SMALLINT(1)',
+            '`commentSettings` VARCHAR(255)',
             '`archiveTemplate` BIGINT(20)',
             '`categoryTemplate` BIGINT(20)',
             '`tagTemplate` BIGINT(20)',
