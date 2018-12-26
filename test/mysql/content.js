@@ -1,6 +1,7 @@
 'use strict';
 
-const assert = require('chai').assert;
+const assert = require('chai').assert,
+    _ = require('../../lib/mixin');
 
 require('../../lib/load');
 
@@ -40,7 +41,9 @@ describe( 'MySQL content type and content queries', () => {
 
     // Insert content here
     let contentId;
-    it('Should add content with status publish', done => {
+    it('Should insert new content', function(done) {
+        this.timeout(5000);
+
         addContent({
             typeId: typeId,
             title: 'Hello Content',
@@ -51,18 +54,6 @@ describe( 'MySQL content type and content queries', () => {
             .then( id => {
                 contentId = id;
                 assert.isNumber( id, true );
-                done();
-            })
-            .catch(done);
-    });
-
-    it('Try', done => {
-        let q = contentTypeQuery().getContentQuery(typeId);
-
-        q.query('SELECT JSON_EXTRACT(`category`) as cat FROM `' + q.table + '`')
-            .then( results => {
-                console.log(results);
-
                 done();
             })
             .catch(done);
@@ -90,7 +81,8 @@ describe( 'MySQL content type and content queries', () => {
         updateContent({
             typeId: typeId,
             ID: contentId,
-            title: 'Test Content Title'
+            title: 'Test Content Title',
+            slug: 'test-content-title'
         })
             .then( id => {
                 return getContent( typeId, id )
@@ -102,161 +94,147 @@ describe( 'MySQL content type and content queries', () => {
             .catch(done);
     });
 
-    it('Should delete content by ID', done => {
+    it('Should delete content by ID', function(done) {
+        this.timeout(3000);
+
         deleteContent( typeId, contentId )
             .then( ok => {
-                assert.isOk( ok, true );
+                return getContent( typeId, contentId );
+            })
+            .then( c => {
+                assert.isFalse( c, true );
                 done();
             })
-            .catch(done);
-    });
-
-    it('Should get contents of the same category', async function() {
-        this.timeout(5000);
-
-        await addContent({
-            typeId: typeId,
-            title: 'Hello Content',
-            author: 1,
-            status: 'public',
-            category: [1, 2, 5]
-        }).catch(returnFalse);
-
-        await addContent({
-            typeId: typeId,
-            title: 'Hello Content',
-            author: 1,
-            status: 'public',
-            category: [5]
-        }).catch(returnFalse);
-
-        return getContents({
-            typeId: typeId,
-            category: 5
-        })
-            .then( contents => {
-                console.log(contents);
-
-                return true;
+            .catch( err => {
+                assert.isFalse(err, true);
+                done();
             });
-    });
-
-    it('Should get the inserted content', done => {
-        getContentBy( typeId, 'ID', contentId )
-            .then( content => {
-                //console.log(content);
-
-                done();
-            })
-            .catch(done);
-    });
-
-    it('Should update the fields column', done => {
-        updateContentType({
-            ID: typeId,
-            fields: ['title', 'summary']
-        })
-            .then( ok => {
-                return getContentType(typeId);
-            })
-            .then( content => {
-                console.log(content.fields);
-                assert.isObject(content, true);
-                done();
-            })
-            .catch(done);
-    });
-
-    it('Should delete the newly inserted content type', done => {
-        deleteContentType(typeId)
-            .then( ok => {
-                assert.isOk( ok, true );
-                done();
-            })
-            .catch(done);
     });
 
     let ids = [];
+    it('Should add multiple contents', async function() {
+        this.timeout(3000);
 
-    it('Should get all content types with no filter', async function() {
-        this.timeout(5000);
+        let status = 'public';
+        for( let i = 1; i < 7; i++ ) {
+            let odd = i%2;
 
-        await addContentType({
-            name: 'Test 1',
-            public: true,
-            slug: 'blog',
-            hasCategories: true,
-            hasTags: true
-        })
-            .then( id => {
-                ids.push(id);
+            let args = {
+                typeId: typeId,
+                title: 'Test',
+                summary: 'A short summary',
+                content: 'The full content of a content.',
+                status: status,
+                author: !! odd ? 1 : 2
+            };
 
-                return id;
-            })
-            .catch(returnFalse);
+            await addContent( args )
+                .then( id => {
+                    ids.push(id);
 
-        await addContentType({
-            name: 'Test 2',
-            slug: 'tester',
-            hasCategories: true,
-            hasTags: true
-        })
-            .then( id => {
-                ids.push(id);
+                    return id;
+                }).catch(err => {
+                    console.log(err);
 
-                return id;
-            })
-            .catch(returnFalse);
-
-        await addContentType({
-            name: 'Test 3',
-            public: true,
-            slug: 'docs',
-            hasCategories: true,
-            hasTags: true
-        })
-            .then( id => {
-                ids.push(id);
-
-                return id;
-            })
-            .catch(returnFalse);
-
-        return getContentTypes()
-            .then( results => {
-                return assert.isArray( results, true );
-            });
-    });
-
-    it('Should get all public types', done => {
-        getContentTypes({
-            public: true
-        })
-            .then( results => {
-                let hasMatch = false;
-
-                results.map( result => {
-                    if ( ! result.public ) {
-                        hasMatch = true;
-                    }
+                    return err;
                 });
 
-                assert.isFalse( hasMatch, true );
+            if ( 'public' === status ) {
+                status = 'private';
+            } else if ( 'private' === status ) {
+                status = 'draft';
+            } else {
+                status = 'public';
+            }
+        }
+
+        return true;
+
+    });
+
+    it('Should get contents with no filter', done => {
+        getContents({
+            typeId: typeId
+        })
+            .then( c => {
+                assert.equal( c.length, 6 );
                 done();
             })
             .catch(done);
     });
 
-    it('Should delete all content types', async function() {
-        this.timeout(5000);
+    it('Should get contents where status = public', done => {
+        getContents({
+            typeId: typeId,
+            status: 'public'
+        })
+            .then( c => {
+                assert.equal( c.length, 2 );
+                done();
+            })
+            .catch(done);
+    });
 
-        for ( let i = 0; i < ids.length; i++ ) {
-            let id = ids[i];
+    it('Should get public and private contents', done => {
+        getContents({
+            typeId: typeId,
+            status__in: ['public', 'private']
+        })
+            .then( c => {
+                assert.equal( c.length, 4 );
+                done();
+            })
+            .catch(done);
+    });
 
-            await deleteContentType(id).catch(errorHandler);
-        }
+    it('Should get contents where author=1', done => {
+        getContents({
+            typeId: typeId,
+            author: 1
+        })
+            .then( c => {
+                assert.equal( c.length, 3 );
+                done();
+            })
+            .catch(done);
+    });
 
-        return true;
+    it('Should get the contents page 1 of 2', done => {
+        getContents({
+            typeId: typeId,
+            perPage: 3
+        })
+            .then( c => {
+                let _ids = _.pluck( c, 'ID' );
+                assert.isTrue( _.isEqual( _ids, ids.slice(0, 3) ), true );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should get contents page 2 of 2', done => {
+        getContents({
+            typeId: typeId,
+            page: 2,
+            perPage: 3
+        })
+            .then( c => {
+                let _ids = _.pluck( c, 'ID' );
+                assert.isTrue( _.isEqual( _ids, ids.slice(3) ), true );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should delete the content type.', function(done) {
+        this.timeout(3000);
+
+        deleteContentType(typeId)
+            .then(ok => {
+                assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
     });
 
     it('Should close database connection', done => {

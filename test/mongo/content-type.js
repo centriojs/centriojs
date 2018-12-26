@@ -42,7 +42,7 @@ describe('MySQL: Content types', () => {
     });
 
     it('Should update content type', function(done) {
-        this.timeout(5000);
+        this.timeout(10000);
 
         updateContentType({
             ID: typeId,
@@ -70,7 +70,7 @@ describe('MySQL: Content types', () => {
     });
 
     it('Should delete the content type.', function(done) {
-        this.timeout(3000);
+        this.timeout(10000);
 
         deleteContentType(typeId)
             .then(ok => {
@@ -83,7 +83,7 @@ describe('MySQL: Content types', () => {
     let ids = [];
 
     it('Should add multiple content types', async function() {
-        this.timeout(15000);
+        this.timeout(100000);
 
         for( let i = 1; i < 7; i++ ) {
             let odd = i%2;
@@ -196,7 +196,7 @@ describe('MySQL: Content types', () => {
     });
 
     it('Should delete all content types', async function() {
-        this.timeout(15000);
+        this.timeout(50000);
 
         for ( let i = 0; i < ids.length; i++ ) {
             let id = ids[i];
