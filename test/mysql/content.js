@@ -25,7 +25,9 @@ describe( 'MySQL content type and content queries', () => {
         addContentType({
             name: 'tester',
             public: true,
-            hasComments: true
+            hasComments: true,
+            hasCategories: true,
+            hasTags: true
         })
             .then( id => {
                 typeId = id;
@@ -43,11 +45,24 @@ describe( 'MySQL content type and content queries', () => {
             typeId: typeId,
             title: 'Hello Content',
             author: 1,
-            status: 'public'
+            status: 'public',
+            category: [7, 11, 1]
         })
             .then( id => {
                 contentId = id;
                 assert.isNumber( id, true );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Try', done => {
+        let q = contentTypeQuery().getContentQuery(typeId);
+
+        q.query('SELECT JSON_EXTRACT(`category`) as cat FROM `' + q.table + '`')
+            .then( results => {
+                console.log(results);
+
                 done();
             })
             .catch(done);
@@ -87,46 +102,43 @@ describe( 'MySQL content type and content queries', () => {
             .catch(done);
     });
 
-    it('Should add content with the same slug', async function() {
+    it('Should delete content by ID', done => {
+        deleteContent( typeId, contentId )
+            .then( ok => {
+                assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should get contents of the same category', async function() {
         this.timeout(5000);
 
-        let id1 = await addContent({
+        await addContent({
             typeId: typeId,
             title: 'Hello Content',
             author: 1,
-            status: 'public'
+            status: 'public',
+            category: [1, 2, 5]
         }).catch(returnFalse);
 
-        if ( id1 ) {
-            await getContent(typeId, id1)
-                .then( c => {
-
-                    return c;
-                })
-                .catch(returnFalse);
-        }
-
-        let id2 = await addContent({
+        await addContent({
             typeId: typeId,
             title: 'Hello Content',
             author: 1,
-            status: 'public'
+            status: 'public',
+            category: [5]
         }).catch(returnFalse);
 
-        if ( id2 ) {
+        return getContents({
+            typeId: typeId,
+            category: 5
+        })
+            .then( contents => {
+                console.log(contents);
 
-            await getContent( typeId, id2)
-                .then( c => {
-                    console.log(c.title);
-
-                    return c;
-                })
-                .catch( err => {
-                    console.log(err);
-                });
-        }
-
-        return true;
+                return true;
+            });
     });
 
     it('Should get the inserted content', done => {

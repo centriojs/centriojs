@@ -102,11 +102,13 @@ describe('MySQL: Install database tables', () => {
         let columns = [
             '`ID` BIGINT(20) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT',
             '`name` VARCHAR(60) NOT NULL UNIQUE',
+            '`description` VARCHAR(255)',
             '`status` ENUM ("active", "inactive") DEFAULT "active"',
             '`public` SMALLINT(1)',
             '`hasCategories` SMALLINT(1)',
             '`hasTags` SMALLINT(1)',
             '`hasArchive` SMALLINT(1)',
+            '`hasPage` SMALLINT(1)',
             '`hasComments` SMALLINT(1)',
             '`commentStatus` SMALLINT(1)',
             '`commentSettings` VARCHAR(255)',
@@ -116,6 +118,8 @@ describe('MySQL: Install database tables', () => {
             '`slug` VARCHAR(255) NOT NULL UNIQUE',
             '`fields` VARCHAR(255)'
         ];
+
+        //contentTypeQuery.dropTable();
 
         contentTypeQuery.createTable(columns)
             .then( ok => {

@@ -261,6 +261,10 @@ describe('MongoDB: Install collections', () => {
                             bsonType: 'string',
                             maximum: 60
                         },
+                        description: {
+                            bsonType: 'string',
+                            maximum: 255
+                        },
                         status: {
                             bsonType: 'enum',
                             enum: ['active', 'inactive'],
