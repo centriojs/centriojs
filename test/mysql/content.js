@@ -3,19 +3,7 @@
 const assert = require('chai').assert,
     _ = require('../../lib/mixin');
 
-require('../../lib/load');
-
-const {DatabaseManager} = require('../../lib/db');
-
-let config = {
-    database: 'mysql',
-    dbName: 'centriojs_test',
-    dbUser: 'root',
-    dbPass: 'root',
-    secretKey: '52071d25e7ec91dd36bdd5166f01659f'
-};
-
-global.dbManager = DatabaseManager(config);
+require('./config');
 
 describe( 'MySQL content type and content queries', () => {
     let typeId;
@@ -128,7 +116,7 @@ describe( 'MySQL content type and content queries', () => {
                 author: !! odd ? 1 : 2
             };
 
-            await addContent( args )
+            let cid = await addContent( args )
                 .then( id => {
                     ids.push(id);
 
@@ -138,6 +126,21 @@ describe( 'MySQL content type and content queries', () => {
 
                     return err;
                 });
+
+            await setContentProperty({
+                typeId: typeId,
+                contentId: cid,
+                name: odd ? 'ids' : 'just',
+                value: i
+            }).catch(returnFalse);
+
+            await setContentProperty({
+                typeId: typeId,
+                contentId: cid,
+                name: odd ? 'ids' : 'just',
+                value: 'yes-' + i
+            }).catch(returnFalse);
+
 
             if ( 'public' === status ) {
                 status = 'private';
@@ -221,6 +224,48 @@ describe( 'MySQL content type and content queries', () => {
             .then( c => {
                 let _ids = _.pluck( c, 'ID' );
                 assert.isTrue( _.isEqual( _ids, ids.slice(3) ), true );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should get contents with single property filter', done => {
+        getContents({
+            typeId: typeId,
+            property: {
+                name: 'ids',
+                compare: 'in',
+                value: [3, 1, 'yes-3', 'yes-5']
+            }
+        })
+            .then( c => {
+                assert.isArray( c, true );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should get contents with multi properties filter', done => {
+        getContents({
+            typeId: typeId,
+            properties: [
+                {
+                    relation: 'OR',
+                    property: [
+                        {
+                            name: 'ids',
+                            value: 'yes-1'
+                        },
+                        {
+                            name: 'just',
+                            value: 'yes-4'
+                        }
+                    ]
+                }
+            ]
+        })
+            .then( c => {
+                assert.isArray( c, true );
                 done();
             })
             .catch(done);

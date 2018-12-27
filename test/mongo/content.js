@@ -103,7 +103,7 @@ describe('Mongo content type queries', () => {
 
     let ids = [];
     it('Should add multiple contents', async function() {
-        this.timeout(30000);
+        this.timeout(100000);
 
         let status = 'public';
         for( let i = 1; i < 7; i++ ) {
@@ -118,7 +118,7 @@ describe('Mongo content type queries', () => {
                 author: !! odd ? 1 : 2
             };
 
-            await addContent( args )
+            let cid = await addContent( args )
                 .then( id => {
                     ids.push(id);
 
@@ -128,6 +128,20 @@ describe('Mongo content type queries', () => {
 
                     return err;
                 });
+
+            await setContentProperty({
+                typeId: typeId,
+                contentId: cid,
+                name: odd ? 'ids' : 'just',
+                value: i
+            }).catch(returnFalse);
+
+            await setContentProperty({
+                typeId: typeId,
+                contentId: cid,
+                name: odd ? 'ids' : 'just',
+                value: 'yes-' + i
+            }).catch(returnFalse);
 
             if ( 'public' === status ) {
                 status = 'private';
@@ -211,6 +225,52 @@ describe('Mongo content type queries', () => {
             .then( c => {
                 let _ids = _.pluck( c, 'ID' );
                 assert.isTrue( _.isEqual( _ids, ids.slice(3) ), true );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should get contents with single property filter', function(done) {
+        this.timeout(5000);
+
+        getContents({
+            typeId: typeId,
+            property: {
+                name: 'ids',
+                value: ['yes-1', 'yes-2', 'yes-3'],
+                compare: 'in'
+            }
+        })
+            .then( c => {
+                assert.isArray( c, true );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should get contents with multi properties filter', function(done) {
+        this.timeout(10000);
+
+        getContents({
+            typeId: typeId,
+            properties: [
+                {
+                    relation: 'OR',
+                    property: [
+                        {
+                            name: 'ids',
+                            value: 'yes-1'
+                        },
+                        {
+                            name: 'just',
+                            value: 'yes-4'
+                        }
+                    ]
+                }
+            ]
+        })
+            .then( c => {
+                assert.isArray( c, true );
                 done();
             })
             .catch(done);
