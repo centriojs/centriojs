@@ -1,22 +1,9 @@
 'use strict';
 
-const assert = require('chai').assert;
+const assert = require('chai').assert,
+    _ = require('../lib/mixin');
 
-require('../lib/load');
-
-const {DatabaseManager} = require('../lib/db');
-
-let config = {
-    database: 'mysql',
-    dbName: 'centriojs_test',
-    dbUser: 'root',
-    dbPass: 'root',
-    secretKey: '52071d25e7ec91dd36bdd5166f01659f'
-};
-
-global.dbManager = DatabaseManager(config);
-
-describe('MySQL: User Query', () => {
+describe('User Query', () => {
     let userId;
 
     Filter.on( 'getUser', function test1(user) {
@@ -59,7 +46,7 @@ describe('MySQL: User Query', () => {
     });
 
     it('Should update user group into admin', function(done) {
-        this.timeout(3000);
+        this.timeout(5000);
 
         updateUserData({ID: userId, group: 'admin'})
             .then( () => {
@@ -220,12 +207,23 @@ describe('MySQL: User Query', () => {
     });
 
     it('Should delete all users', done => {
-        userQuery().query( `DELETE FROM ${userQuery().dbManager.table}`)
-            .then( ok => {
-                assert.isOk(ok, true);
-                done();
-            })
-            .catch(done);
+        let type = dbManager.type;
+
+        if ( 'mysql' === type ) {
+            userQuery().query( `DELETE FROM ${userQuery().dbManager.table}`)
+                .then( ok => {
+                    assert.isOk(ok, true);
+                    done();
+                })
+                .catch(done);
+        } else {
+            userQuery().dbManager.delete({})
+                .then(ok => {
+                    assert.isOk( ok, true );
+                    done();
+                })
+                .catch(done);
+        }
     });
 
     it('Should close the database connection', () => {

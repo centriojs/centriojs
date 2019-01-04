@@ -1,11 +1,9 @@
 'use strict';
 
 const assert = require('chai').assert,
-    _ = require('../../lib/mixin');
+    _ = require('../lib/mixin');
 
-require('./config');
-
-describe('Mongo: Content categories and tax', () => {
+describe('Categories and Tags queries', () => {
     let typeId;
 
     it('Should add new content type name=tester', function(done) {
@@ -241,7 +239,7 @@ describe('Mongo: Content categories and tax', () => {
             .catch(done);
     });
 
-    it('Should get tags by IDs', done => {
+    it('Should get tags by IDs', function(done) {
         this.timeout(10000);
 
         getTags( typeId, {
@@ -256,7 +254,7 @@ describe('Mongo: Content categories and tax', () => {
     });
 
     it('Should delete the content type.', function(done) {
-        this.timeout(5000);
+        this.timeout(15000);
 
         deleteContentType(typeId)
             .then(ok => {
@@ -266,4 +264,8 @@ describe('Mongo: Content categories and tax', () => {
             .catch(done);
     });
 
+    it('Should database connection', done => {
+        dbManager.close();
+        done();
+    });
 });
