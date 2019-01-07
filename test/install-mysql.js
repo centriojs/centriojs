@@ -56,6 +56,25 @@ describe('MySQL: Install database tables', () => {
             .catch(done);
     });
 
+    it('Should create user group table', done => {
+        let groupQuery = dbManager.execQuery('user_group');
+
+        let columns = [
+            '`ID` BIGINT(20) UNSIGNED NOT NULL PRIMARY KEY AUTO_INCREMENT',
+            '`name` VARCHAR(50) NOT NULL UNIQUE',
+            '`description` VARCHAR(255)',
+            '`caps` LONGTEXT',
+            'Index (`ID`, `name`)'
+        ];
+
+        groupQuery.createTable(columns)
+            .then( ok => {
+                assert.isOk( ok, true );
+                done();
+            })
+            .catch(done);
+    });
+
     it('Should create settings table', done => {
         let settingQuery = dbManager.execQuery('settings');
 
