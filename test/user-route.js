@@ -48,6 +48,21 @@ describe('User routes', () => {
             .catch(done);
     });
 
+    it('Should verify and login user', function(done) {
+        global.$_POST = {
+            email: 'irene@local.dev',
+            pass: 123456
+        };
+
+        userRouter.validateAndLogin( req, res )
+            .then( response => {
+                assert.isTrue( response.success, true );
+                assert.equal( response.user.ID, currentUser.ID );
+                done();
+            })
+            .catch(done);
+    });
+
     it('Should update user group', function(done) {
         global.$_POST = {group: 'admin'};
 
