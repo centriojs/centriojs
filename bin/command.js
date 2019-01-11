@@ -10,53 +10,59 @@ require('../lib/load');
 
 const command = args.shift();
 
+let cmdArgs = {};
+
+args.map( arg => {
+    if ( arg.match('--') ) {
+        let _arg = arg.split('='),
+            name = _arg[0].replace(/--/, '');
+
+        cmdArgs[name] = _arg[1];
+    }
+});
+
 let location;
 
 switch( command ) {
-    case 'create' :
+    case 'create-app' :
         location = args.shift();
 
+        // Create main directory
         mkDir(location)
-            // Return true to continue the cycle if the directory already exist
-            .catch( returnTrue )
+            .catch( err => {
+                console.log(err);
+            })
             .then( () => {
                 // Create themes folder
-                let themePath = path.resolve(location, './themes');
+                let themePath = path.resolve( location, './themes' );
 
-                return mkDir(themePath).catch(returnTrue);
+                return mkDir(themePath);
             })
             .then( () => {
                 // Create modules folder
-                let modulesPath = path.resolve(location, './modules');
+                let modulesPath = path.resolve( location, './modules' );
 
-                return mkDir(modulesPath).catch(returnTrue);
+                return mkDir(modulesPath);
             })
             .then( () => {
-                // Create app.js file
-                let app = `'use strict';
-                
-const centrio = require('centrio');
+                let port = cmdArgs.port || 80,
+                    host = cmdArgs.host || 'localhost';
 
-// Set configuration    
-centrio.config({
-    // Set the database type to use for this application. [mysql, mongodb]
-    database: 'mysql',
-    dbHost: 'localhost',
-    dbName: '',
-    dbUser: '',
-    dbPass: '',
-    dbPort: '3306',
-    prefix: 'cjs_',
-    secretKey: ''
-});
+                // Info here
+                let config = `const CentrioJs = require('centriojs');
 
-// Change this to your actual \`Port\` number and \`hostname\`.
-centrio.listen(80, 'localhost');`;
+CentrioJs.listen( ${port}, '${host}' );`;
 
-                let filename = path.resolve(location, 'app.js');
+                let file = path.resolve(location + '/app.js');
 
-                return writeFile(filename, app).catch(returnTrue);
+                return writeFile( file, config );
+            })
+            .catch( err => {
+                console.log(err);
             });
+        break;
 
+    case 'arg' :
+        console.log(cmdArgs);
         break;
 }

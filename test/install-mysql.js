@@ -96,7 +96,7 @@ describe('MySQL: Install database tables', () => {
         let columns = [
             '`ID` BIGINT(20) NOT NULL PRIMARY KEY AUTO_INCREMENT',
             '`name` VARCHAR(60) NOT NULL UNIQUE',
-            '`type` ENUM ("template", "module", "menu") DEFAULT "template"',
+            '`type` ENUM ("component", "module", "menu") DEFAULT "component"',
             '`location` VARCHAR(100) NOT NULL',
             '`contentType` VARCHAR(60) NOT NULL DEFAULT "global"',
             '`properties` LONGTEXT',
@@ -124,18 +124,22 @@ describe('MySQL: Install database tables', () => {
             '`description` VARCHAR(255)',
             '`status` ENUM ("active", "inactive") DEFAULT "active"',
             '`public` SMALLINT(1)',
+            '`hierarchical` SMALLINT(1)',
             '`hasCategories` SMALLINT(1)',
             '`hasTags` SMALLINT(1)',
             '`hasArchive` SMALLINT(1)',
             '`hasPage` SMALLINT(1)',
             '`hasComments` SMALLINT(1)',
+            '`hasThumbnail` SMALLINT(1)',
             '`commentStatus` SMALLINT(1)',
             '`commentSettings` VARCHAR(255)',
             '`archiveTemplate` BIGINT(20)',
             '`categoryTemplate` BIGINT(20)',
             '`tagTemplate` BIGINT(20)',
             '`slug` VARCHAR(255) NOT NULL UNIQUE',
-            '`fields` VARCHAR(255)'
+            '`fields` VARCHAR(255)',
+            '`settings` LONGTEXT',
+            'Index (`ID`, `slug`, `status`)'
         ];
 
         //contentTypeQuery.dropTable();

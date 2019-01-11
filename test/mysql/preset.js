@@ -99,7 +99,7 @@ describe('MySQL preset queries', () => {
             });
     });
 
-    it('Should get presets where type in template, menu', done => {
+    it('Should get presets where type in component, menu', done => {
         getPresets({
             type__in: ['template', 'menu']
         })
