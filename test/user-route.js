@@ -5,33 +5,20 @@ const assert = require('chai').assert,
 
 let userRouter = require('../lib/route/user');
 
+let req = {
+    param: {}
+};
+
+let res = {
+    json: json => {
+        return json;
+    }
+};
+
 describe('User routes', () => {
     userRouter.setCurrentUser();
 
-    it('Should return the list of users', function(done) {
-        this.timeout(5000);
-
-        userRouter.getUsers({param: {}})
-            .then( response => {
-                assert.equal(response.title, 'Users');
-                assert.isArray(response.users, true);
-                assert.equal(response.userSettings.perPage, 50);
-                done();
-            })
-            .catch(done);
-    });
-
     let userId;
-
-    let req = {
-        param: {}
-    };
-
-    let res = {
-        json: json => {
-            return json;
-        }
-    };
 
     it('Should add new user', function(done) {
         global.$_POST = {
@@ -45,6 +32,19 @@ describe('User routes', () => {
             .then( response => {
                 assert.equal( response.success, true );
                 userId = response.ID;
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should return the users manager page', function(done) {
+        this.timeout(5000);
+
+        userRouter.getUsers({})
+            .then( response => {
+                assert.equal(response.title, 'Users');
+                assert.isArray(response.users, true);
+                assert.equal(response.userSettings.perPage, 50);
                 done();
             })
             .catch(done);
@@ -79,7 +79,7 @@ describe('User routes', () => {
     });
 
     it('Should get user data for editing', function(done) {
-        userRouter.editUser({param: {id: userId}})
+        userRouter.editUser({id: userId})
             .then( response => {
                 assert.equal(response.user.ID, userId);
                 done();
@@ -118,7 +118,6 @@ describe('User routes', () => {
     it('Should add new user group', function(done) {
         global.$_POST = {
             name: 'Lowest',
-            description: 'The lowest group',
             caps: {read: 1}
         };
 
@@ -143,7 +142,7 @@ describe('User routes', () => {
     });
 
     it('Should get user group for visual editing', function(done) {
-        userRouter.editGroup({param: {id: groupId}})
+        userRouter.editGroup({id: groupId})
             .then( response => {
                 assert.equal( response.group.ID, groupId );
                 done();

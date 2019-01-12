@@ -1,18 +1,13 @@
 'use strict';
 
 import React from 'react';
-import Template from './component/template';
+import Index from './index';
 import {getComponent} from "./component/component";
-import './install/install';
+import './users/manager';
+import './users/edit';
+import './users/group-manager';
 
-export default class Index extends Template {
-    constructor(props) {
-        super(props);
-
-        this.properties = props;
-        this.setListener();
-    }
-
+export default class Admin extends Index {
     render() {
         if ( this.hasError() ) {
             return null;
