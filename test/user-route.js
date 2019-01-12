@@ -9,6 +9,8 @@ describe('User routes', () => {
     userRouter.setCurrentUser();
 
     it('Should return the list of users', function(done) {
+        this.timeout(5000);
+
         userRouter.getUsers({param: {}})
             .then( response => {
                 assert.equal(response.title, 'Users');
@@ -64,6 +66,8 @@ describe('User routes', () => {
     });
 
     it('Should update user group', function(done) {
+        this.timeout(5000);
+
         global.$_POST = {group: 'admin'};
 
         userRouter.updateUser( {param: {id: userId}}, res )
@@ -84,6 +88,8 @@ describe('User routes', () => {
     });
 
     it('Should delete user from the database', function(done) {
+        this.timeout(5000);
+
         userRouter.deleteUser({param: {id: userId}}, res )
             .then( response => {
                 assert.isTrue( response.success, true );
@@ -111,7 +117,7 @@ describe('User routes', () => {
 
     it('Should add new user group', function(done) {
         global.$_POST = {
-            name: 'Subscriber',
+            name: 'Lowest',
             description: 'The lowest group',
             caps: {read: 1}
         };
@@ -125,7 +131,29 @@ describe('User routes', () => {
             .catch(done);
     });
 
+    it('Should get user groups', function(done) {
+        this.timeout(3000);
+
+        userRouter.getGroups(req)
+            .then( response => {
+                assert.equal( response.groups.length, 2 );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should get user group for visual editing', function(done) {
+        userRouter.editGroup({param: {id: groupId}})
+            .then( response => {
+                assert.equal( response.group.ID, groupId );
+                done();
+            })
+            .catch(done);
+    });
+
     it('Should delete user group', function(done) {
+        this.timeout(5000);
+
         userRouter.deleteGroup( {param: {groupId: groupId}}, res )
             .then( response => {
                 assert.isTrue( response.success );

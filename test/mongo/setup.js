@@ -1,10 +1,8 @@
 'use strict';
 
 let config = {
-    database: 'mysql',
+    database: 'mongodb',
     dbName: 'centriojs_test',
-    dbUser: 'root',
-    dbPass: 'root',
     prefix: 'cjms_'
 };
 

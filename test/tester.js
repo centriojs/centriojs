@@ -1,6 +1,16 @@
-const fs = require('fs'),
-    path = require('path');
+const {encrypt, decrypt} = require('../lib/encrypt');
 
-let f1 = path.resolve( __dirname, './ambot.js' ),
-    f2 = require(f1);
-console.log(f2);
+let pass = 124356;
+
+encrypt(pass)
+.then( hash => {
+    console.log(hash);
+
+    return decrypt(hash);
+})
+    .then( p => {
+        console.log(p);
+    })
+    .catch(err => {
+        console.log(err);
+    });

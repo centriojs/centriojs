@@ -13,6 +13,8 @@ describe('User Query', () => {
     });
 
     it('Should add new user', function(done) {
+        this.timeout(3000);
+
         addUser({
             display: 'nazzy1',
             email: 'nazzy1@local.dev',

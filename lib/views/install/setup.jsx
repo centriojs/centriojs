@@ -17,6 +17,8 @@ class AppSetup extends Template {
     onSubmit( values, formApi ) {}
 
     form({handleSubmit, form}) {
+        let post = this.props.$_POST || {};
+
         return (
             <form method={'post'} onSubmit={handleSubmit}>
                 <div>
@@ -26,30 +28,35 @@ class AppSetup extends Template {
                             formApi: form,
                             name: 'host',
                             label: 'Host',
-                            placeholder: 'localhost'
+                            placeholder: 'localhost',
+                            value: post.host || '',
                         }}/>
                         <InputField {...{
                             formApi: form,
                             name: 'dbName',
                             label: 'Database',
-                            required: true
+                            required: true,
+                            value: post.dbName || '',
                         }} />
                         <InputField {...{
                             formApi: form,
                             name: 'dbUser',
                             label: 'User',
-                            required: true
+                            required: true,
+                            value: post.dbUser || '',
                         }} />
                         <InputField {...{
                             formApi: form,
                             name: 'dbPass',
                             label: 'Password',
-                            required: true
+                            required: true,
+                            value: post.dbPass || '',
                         }} />
                         <InputField {...{
                             formApi: form,
                             name: 'prefix',
                             label: 'Prefix',
+                            value: post.prefix || '',
                             description: 'Use to prefix database tables.'
                         }} />
                     </div>
@@ -59,12 +66,14 @@ class AppSetup extends Template {
                             formApi: form,
                             name: 'appName',
                             label: 'Name',
-                            required: true
+                            required: true,
+                            value: post.appName || ''
                         }} />
                         <InputField {...{
                             formApi: form,
                             name: 'tagline',
-                            label: 'Tagline'
+                            label: 'Tagline',
+                            value: post.tagline || ''
                         }} />
                         <div>
                             <h4>Administrator</h4>
@@ -72,13 +81,15 @@ class AppSetup extends Template {
                                 formApi: form,
                                 name: 'display',
                                 label: 'Display Name',
-                                required: true
+                                required: true,
+                                value: post.display || ''
                             }} />
                             <InputField {...{
                                 formApi: form,
                                 name: 'email',
                                 label: 'Email',
-                                required: true
+                                required: true,
+                                value: post.email || ''
                             }} />
                         </div>
                     </div>

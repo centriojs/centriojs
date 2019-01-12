@@ -2,7 +2,8 @@
 
 const assert = require('chai').assert,
     path = require('path'),
-    _ = require('../lib/mixin');
+    _ = require('../lib/mixin'),
+    Cache = require('../lib/cache');
 
 global.ABSPATH = path.resolve( __dirname, '../../demo/app-mysql');
 
@@ -17,80 +18,30 @@ describe( 'Installation cycle', () => {
     installRoute = installRoute();
 
     it('Should install database and set app setup.', function(done) {
-        this.timeout(15000);
+        this.timeout(25000);
 
-        global.$_POST = {
-            dbName: 'centriojs_test',
-            dbUser: 'root',
-            dbPass: 'root',
-            prefix: 'cjms_',
+        Cache.set( 'database', 'db', global.dbConfig.database );
+
+        global.$_POST = _.extend( global.dbConfig, {
             appName: 'Test Application',
             display: 'admin',
             email: 'admin@local.dev',
             pass: 123456
-        };
+        });
 
         installRoute.validateSetup( req, res )
             .then( response => {
-                console.log(response);
+                assert.isTrue( response.success );
                 done();
             })
             .catch(done);
     });
 
     it('Should close database connection', done => {
-        if ( global.dbManager ) {
+        if ( dbManager ) {
             dbManager.close();
         }
+
         done();
     });
-
-    /**
-
-    it( 'Should check database connection', function(done) {
-        global.$_POST = dbConfig;
-
-        installRoute.createConfiguration( req, res )
-            .then( response => {
-                dbManager.close();
-                assert.isTrue( response.success );
-                done();
-            })
-            .catch(done);
-    } );
-
-    it( 'Should install tables', function(done) {
-        this.timeout(5000);
-
-        global.dbManager = DatabaseManager(dbConfig);
-
-        installRoute.installTables( req, res )
-            .then( response => {
-                dbManager.close();
-                assert.isTrue( response.success );
-                done();
-            })
-            .catch(done);
-    } );
-
-    it( 'Should set app settings and default default contents', function(done) {
-
-        global.$_POST = {
-            appName: 'Test Application',
-            tagline: 'The coolest application ever.',
-            display: 'admin',
-            email: 'admin@local.dev',
-            pass: 123457
-        };
-
-        installRoute.updateConfig( req, res )
-            .then( response => {
-                dbManager.close();
-                assert.isTrue( response.success );
-                done();
-            })
-            .catch(done);
-    } );
-
-     **/
 } );
