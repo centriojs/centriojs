@@ -6,6 +6,8 @@ import {getComponent} from "./component/component";
 import './users/manager';
 import './users/edit';
 import './users/group-manager';
+import './presets/manager';
+import './presets/edit-preset';
 
 export default class Admin extends Index {
     render() {

@@ -3,6 +3,8 @@
 const assert = require('chai').assert,
     _ = require('../lib/mixin');
 
+require('./install');
+
 const presetRoute = require('../lib/route/preset');
 global.currentUser = {ID: 1};
 
@@ -18,15 +20,6 @@ describe('Admin presets routes', () => {
             return json;
         }
     };
-
-    it('Should return data needed to add preset', function(done) {
-        presetRoute.editPreset({})
-            .then( response => {
-                assert.equal( response.title, 'New Preset' );
-                done();
-            })
-            .catch(done);
-    });
 
     it('Should add new preset', function(done) {
         global.$_POST = {
@@ -46,8 +39,17 @@ describe('Admin presets routes', () => {
             .catch(done);
     });
 
+    it('Should get preset page for visual editing', function(done) {
+        presetRoute.editPreset({id: presetId})
+            .then( response => {
+                assert.equal( response.preset.ID, presetId );
+                done();
+            })
+            .catch(done);
+    });
+
     it('Should get the data of the given preset id for visual editing', function(done) {
-        presetRoute.editPreset( {param: {id: presetId} })
+        presetRoute.editPreset( {id: presetId} )
             .then( response => {
                 assert.equal( response.preset.ID, presetId );
                 done();
@@ -56,6 +58,8 @@ describe('Admin presets routes', () => {
     });
 
     it('Should get the list of presets', function(done) {
+        this.timeout(5000);
+
         presetRoute.getPresets({})
             .then( response => {
                 assert.isArray( response.presets );
@@ -79,3 +83,5 @@ describe('Admin presets routes', () => {
         done();
     });
 });
+
+require('./reset');
