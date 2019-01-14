@@ -4,13 +4,13 @@ const assert = require('chai').assert;
 
 describe('Drop all tables', function() {
 
-    let tables = ['users', 'user_group', 'user_settings', 'settings', 'presets'];
+    let tables = ['users', 'user_group', 'user_settings', 'settings', 'presets', 'endpoint'];
 
     for( let i = 0; i < tables.length; i++ ) {
         let table = tables[i];
 
         it(`Should drop table ${table}`, function(done) {
-            this.timeout(5000);
+            this.timeout(15000);
 
             dbManager.execQuery(table).dropTable()
                 .then( ok => {
@@ -26,12 +26,10 @@ describe('Drop all tables', function() {
     it('Should delete all content types and drop content_types table', function(done) {
         this.timeout(55000);
 
-
-        getContentTypes({perPage: -1})
+        getContentTypes({})
             .then( async list => {
-
                 if ( ! list.length ) {
-                    return true;
+                    return dbManager.execQuery('content_types').dropTable();
                 }
 
                 for( let i = 0; i < list.length; i++ ) {
@@ -41,13 +39,11 @@ describe('Drop all tables', function() {
                 return dbManager.execQuery('content_types').dropTable();
             })
             .then( () => {
+                return dbManager.execQuery('type_properties').dropTable();
+            })
+            .then( () => {
                 done();
             })
             .catch(done);
-    });
-
-    it('Should close database connection', done => {
-        dbManager.close();
-        done();
     });
 });

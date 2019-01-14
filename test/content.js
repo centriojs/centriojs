@@ -10,16 +10,53 @@ describe( 'Content and content type queries', () => {
         this.timeout(15000);
 
         addContentType({
-            name: 'tester',
-            public: true,
+            name: 'Tester',
+            showUI: true,
             hasComments: true,
-            hasCategories: true,
-            hasTags: true
+            hasArchive: true,
+            hasPage: true,
+            hierarchical: true,
+            settings: {
+                itemsPerPage: 50,
+                labels: {
+                    new: 'New Tester',
+                    edit: 'Edit Tester',
+                    search: 'Search Tester'
+                }
+            }
         })
             .then( id => {
                 typeId = id;
 
                 assert.isNumber( id, true );
+                done();
+            })
+            .catch(done);
+    });
+
+    let taxId;
+    it('Should add new content of taxonomy type', function(done) {
+        this.timeout(5000);
+
+        addContentType({
+            name: 'Categories',
+            type: 'taxonomy',
+            parent: typeId,
+            showUI: true,
+            hasArchive: true,
+            hasPage: true,
+            settings: {
+                itemsPerPage: 50,
+                labels: {
+                    new: 'Add Category',
+                    edit: 'Edit Category',
+                    search: 'Search Category'
+                }
+            }
+        })
+            .then( id => {
+                taxId = id;
+                assert.isNumber( id );
                 done();
             })
             .catch(done);
@@ -34,8 +71,7 @@ describe( 'Content and content type queries', () => {
             typeId: typeId,
             title: 'Hello Content',
             author: 1,
-            status: 'public',
-            category: [7, 11, 1]
+            status: 'public'
         })
             .then( id => {
                 contentId = id;

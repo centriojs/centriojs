@@ -151,9 +151,4 @@ describe('MySQL: Install database tables', () => {
             })
             .catch(done);
     });
-
-    it('Should close database.', done => {
-        dbManager.close();
-        done();
-    });
 });

@@ -160,9 +160,4 @@ describe('User routes', () => {
             })
             .catch(done);
     });
-
-    it('Should close database connection', done => {
-        dbManager.close();
-        done();
-    });
 });

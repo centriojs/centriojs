@@ -3,6 +3,8 @@
 const assert = require('chai').assert,
     _ = require('../lib/mixin');
 
+require('./install');
+
 const contentRoute = require('../lib/route/content');
 
 let req = { param: {} };
@@ -20,8 +22,8 @@ describe('Content routes', () => {
         this.timeout(45000);
 
         global.$_POST = {
-            name: 'Blogs',
-            slug: 'blog',
+            name: 'Blogger Area',
+            slug: 'blogger',
             public: true,
             hierarchical: true,
             hasCategories: true,
@@ -47,9 +49,11 @@ describe('Content routes', () => {
     });
 
     it('Should get content types listings', function(done) {
+        this.timeout(5000);
+
         contentRoute.getContentTypes(req)
             .then( response => {
-                assert.equal( response.contentTypes.length, 1 );
+                assert.equal( response.contentTypes.length, 3 );
                 done();
             })
             .catch(done);
@@ -57,7 +61,9 @@ describe('Content routes', () => {
 
     let contentType;
     it('Should get content type for visual editing', function(done) {
-        contentRoute.editContentType({param: {id: typeId}})
+        this.timeout(15000);
+
+        contentRoute.editContentType({id: typeId})
             .then( response => {
                 assert.equal( response.contentType.ID, typeId );
                 contentType = response.contentType;
@@ -68,6 +74,8 @@ describe('Content routes', () => {
 
     let contentId;
     it('Should add content for content type', function(done) {
+        this.timeout(15000);
+
         let slug = contentType.slug;
 
         global.$_POST = {
@@ -86,10 +94,10 @@ describe('Content routes', () => {
     });
 
     it('Should get content listing of content type', function(done) {
+        this.timeout(15000);
+
         contentRoute.contentManager({
-            param: {
-                type: contentType.slug
-            }
+            type: contentType.slug
         })
             .then( response => {
                 assert.equal( response.contents.length, 1 );
@@ -99,11 +107,11 @@ describe('Content routes', () => {
     });
 
     it('Should get content of content type for visual editing', function(done) {
+        this.timeout(15000);
+
         contentRoute.editContent({
-            param: {
-                id: contentId,
-                type: contentType.slug
-            }
+            id: contentId,
+            type: contentType.slug
         })
             .then( response => {
                 assert.equal( response.content.ID, contentId );
@@ -114,6 +122,8 @@ describe('Content routes', () => {
 
     let catId;
     it('Should add new category via POST', function(done) {
+        this.timeout(15000);
+
         global.$_POST = {
             name: 'Apple',
             description: 'An apple a day keeps the doctor away.'
@@ -131,7 +141,9 @@ describe('Content routes', () => {
     });
 
     it('Should get category listing of content type', function(done) {
-        contentRoute.categoryManager({param: {type: contentType.slug}})
+        this.timeout(15000);
+
+        contentRoute.categoryManager({type: contentType.slug})
             .then( response => {
                 assert.equal( response.categories.length, 1 );
                 done();
@@ -140,11 +152,11 @@ describe('Content routes', () => {
     });
 
     it('Should get category of content type for visual editing', function(done) {
+        this.timeout(15000);
+
         contentRoute.editCategory({
-            param: {
-                type: contentType.slug,
-                id: catId
-            }
+            type: contentType.slug,
+            id: catId
         })
             .then( response => {
                 assert.equal( response.category.ID, catId );
@@ -154,6 +166,7 @@ describe('Content routes', () => {
     });
 
     it('Should delete category of content type', function(done) {
+        this.timeout(15000);
         contentRoute.deleteCategory( {
             param: {
                 id: catId,
@@ -169,6 +182,8 @@ describe('Content routes', () => {
 
     let tagId;
     it('Should add new tag of content type', function(done) {
+        this.timeout(15000);
+
         global.$_POST = {
             name: 'Orange',
             description: 'Yummy and healthy'
@@ -188,10 +203,10 @@ describe('Content routes', () => {
     });
 
     it('Should get tag listings of content type', function(done) {
+        this.timeout(15000);
+
         contentRoute.tagManager({
-            param: {
-                type: contentType.slug
-            }
+            type: contentType.slug
         })
             .then( response => {
                 assert.equal( response.tags.length, 1 );
@@ -201,11 +216,11 @@ describe('Content routes', () => {
     });
 
     it('Should get tag of content type for visual editing', function(done) {
+        this.timeout(15000);
+
         contentRoute.editTag({
-            param: {
-                type: contentType.slug,
-                id: tagId
-            }
+            type: contentType.slug,
+            id: tagId
         })
             .then( response => {
                 assert.equal( response.tag.ID, tagId );
@@ -215,6 +230,8 @@ describe('Content routes', () => {
     });
 
     it('Should delete tag of content type', function(done) {
+        this.timeout(15000);
+
         contentRoute.deleteTag({
             param: {
                 type: contentType.slug,
@@ -231,6 +248,8 @@ describe('Content routes', () => {
     let commentId;
 
     it('Should add content comment of content type via POST', function(done) {
+        this.timeout(15000);
+
         global.$_POST = {
             comment: 'Hey you what\'s up'
         };
@@ -249,25 +268,12 @@ describe('Content routes', () => {
             .catch(done);
     });
 
-    it( 'Should get comments list of content type', function(done) {
-        contentRoute.commentsManager({
-            param: {
-                type: contentType.slug
-            }
-        })
-            .then( response => {
-                assert.equal( response.comments.length, 1 );
-                done();
-            })
-            .catch(done);
-    });
-
     it('Should get comment of content type for visual editing', function(done) {
+        this.timeout(25000);
+
         contentRoute.editComment({
-            param: {
-                type: contentType.slug,
-                id: commentId
-            }
+            type: contentType.slug,
+            id: commentId
         })
             .then( response => {
                 assert.equal( response.comment.ID, commentId );
@@ -276,7 +282,22 @@ describe('Content routes', () => {
             .catch(done);
     });
 
+    it( 'Should get comments list of content type', function(done) {
+        this.timeout(25000);
+
+        contentRoute.commentsManager({
+            type: contentType.slug
+        })
+            .then( response => {
+                assert.equal( response.comments.length, 1 );
+                done();
+            })
+            .catch(done);
+    });
+
     it('Should delete comment of content type', function(done) {
+        this.timeout(15000);
+
         contentRoute.deleteComment({
             param: {
                 type: contentType.slug,
@@ -291,6 +312,8 @@ describe('Content routes', () => {
     });
 
     it('Should delete content of content type', function(done) {
+        this.timeout(15000);
+
         contentRoute.deleteContent({
             param: {
                 id: contentId,
@@ -314,9 +337,6 @@ describe('Content routes', () => {
             })
             .catch(done);
     });
-
-    it('Should close database connection', done => {
-        dbManager.close();
-        done();
-    });
 });
+
+require('./reset');

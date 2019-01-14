@@ -1,16 +1,23 @@
-const {encrypt, decrypt} = require('../lib/encrypt');
+let vm = require('vm');
 
-let pass = 124356;
+require('../lib/load');
 
-encrypt(pass)
-.then( hash => {
-    console.log(hash);
+let args = {
+    require: require,
+    output: ''
+};
 
-    return decrypt(hash);
-})
-    .then( p => {
-        console.log(p);
-    })
-    .catch(err => {
-        console.log(err);
-    });
+Object.keys(global).map( key => {
+    args[key] = global[key];
+});
+
+let sandbox = vm.createContext(args);
+
+vm.runInContext(`
+'use strict';
+
+output = typeof deleteEndPoint;
+
+`, sandbox );
+
+console.log(sandbox.output);

@@ -36,12 +36,4 @@ describe( 'Installation cycle', () => {
             })
             .catch(done);
     });
-
-    it('Should close database connection', done => {
-        if ( dbManager ) {
-            dbManager.close();
-        }
-
-        done();
-    });
 } );
