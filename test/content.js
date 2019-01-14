@@ -26,9 +26,8 @@ describe( 'Content and content type queries', () => {
             }
         })
             .then( id => {
-                typeId = id;
-
                 assert.isNumber( id, true );
+                typeId = id;
                 done();
             })
             .catch(done);
