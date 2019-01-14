@@ -24,7 +24,7 @@ describe('Content type queries', () => {
             .catch(done);
     });
 
-    it('Should property for content type', function(done) {
+    it('Should update property for content type', function(done) {
         this.timeout(5000);
 
         setTypeProperty( typeId, 'itemPerPage', 20, true )
@@ -185,6 +185,20 @@ describe('Content type queries', () => {
             });
     });
 
+    it('Should content_type of tax type content', function(done) {
+        this.timeout(5000);
+
+        setTypeProperty( catTypeId, 'content_type', typeId )
+            .then( ok => {
+                return getTypeProperty( catTypeId, 'content_type' );
+            })
+            .then( types => {
+                assert.isTrue( _.isArray(types) );
+                done();
+            })
+            .catch(done);
+    });
+
     let termId;
     it('Should add new term', function(done) {
         this.timeout(15000);
@@ -200,6 +214,25 @@ describe('Content type queries', () => {
             })
             .then( term => {
                 assert.equal( term.name, 'Apple' );
+
+                return getTerms({typeId: catTypeId});
+            })
+            .then( terms => {
+                assert.equal( terms.length, 1 );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should set content term', function(done) {
+        this.timeout(15000);
+
+        setContentTerm( typeId, catTypeId, contentId, termId )
+            .then( () => {
+                return getContentTerms(typeId, catTypeId, contentId);
+            })
+            .then( terms => {
+                assert.equal( terms.length, 1 );
                 done();
             })
             .catch(done);
