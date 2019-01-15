@@ -11,31 +11,29 @@ let req = { param: {} };
 
 let res = { json: json => { return json; } };
 
-let next = () => { return true; };
+let next = () => { return reject('An error occurred.'); };
 global.currentUser = {ID: 1};
 
 describe('Content routes', () => {
     let typeId;
     let typeIds = [];
 
-    it('Should add new content type via POST', function(done) {
+    it('Should add new content type via POST with properties', function(done) {
         this.timeout(45000);
 
         global.$_POST = {
             name: 'Blogger Area',
             slug: 'blogger',
-            public: true,
             hierarchical: true,
-            hasCategories: true,
             hasComments: true,
-            hasTags: true,
             hasArchive: true,
             hasPage: true,
             hasThumbnail: true,
             status: 'active',
             settings: {
-                itemsPerPage: 20,
-                prefixByCategory: true
+                itemsPerPage: 50,
+                archiveTitle: 'Blog',
+                archiveDescription: 'All the bloggers will go here.'
             }
         };
 
@@ -43,6 +41,7 @@ describe('Content routes', () => {
             .then( response => {
                 assert.isTrue( response.success );
                 typeId = response.ID;
+
                 done();
             })
             .catch(done);
@@ -53,7 +52,7 @@ describe('Content routes', () => {
 
         contentRoute.getContentTypes(req)
             .then( response => {
-                assert.equal( response.contentTypes.length, 3 );
+                assert.equal( response.contentTypes.length, 4 );
                 done();
             })
             .catch(done);
@@ -115,131 +114,6 @@ describe('Content routes', () => {
         })
             .then( response => {
                 assert.equal( response.content.ID, contentId );
-                done();
-            })
-            .catch(done);
-    });
-
-    let catId;
-    it('Should add new category via POST', function(done) {
-        this.timeout(15000);
-
-        global.$_POST = {
-            name: 'Apple',
-            description: 'An apple a day keeps the doctor away.'
-        };
-
-        contentRoute.updateCategory( {
-            param: {type: contentType.slug}
-        }, res )
-            .then( response => {
-                assert.isTrue( response.success );
-                catId = response.ID;
-                done();
-            })
-            .catch(done);
-    });
-
-    it('Should get category listing of content type', function(done) {
-        this.timeout(15000);
-
-        contentRoute.categoryManager({type: contentType.slug})
-            .then( response => {
-                assert.equal( response.categories.length, 1 );
-                done();
-            })
-            .catch(done);
-    });
-
-    it('Should get category of content type for visual editing', function(done) {
-        this.timeout(15000);
-
-        contentRoute.editCategory({
-            type: contentType.slug,
-            id: catId
-        })
-            .then( response => {
-                assert.equal( response.category.ID, catId );
-                done();
-            })
-            .catch(done);
-    });
-
-    it('Should delete category of content type', function(done) {
-        this.timeout(15000);
-        contentRoute.deleteCategory( {
-            param: {
-                id: catId,
-                type: contentType.slug
-            }
-        }, res )
-            .then( response => {
-                assert.isTrue( response.success );
-                done();
-            })
-            .catch(done);
-    });
-
-    let tagId;
-    it('Should add new tag of content type', function(done) {
-        this.timeout(15000);
-
-        global.$_POST = {
-            name: 'Orange',
-            description: 'Yummy and healthy'
-        };
-
-        contentRoute.updateTag({
-            param: {
-                type: contentType.slug
-            }
-        }, res )
-            .then( response => {
-                assert.isTrue( response.success );
-                tagId = response.ID;
-                done();
-            })
-            .catch(done);
-    });
-
-    it('Should get tag listings of content type', function(done) {
-        this.timeout(15000);
-
-        contentRoute.tagManager({
-            type: contentType.slug
-        })
-            .then( response => {
-                assert.equal( response.tags.length, 1 );
-                done();
-            })
-            .catch(done);
-    });
-
-    it('Should get tag of content type for visual editing', function(done) {
-        this.timeout(15000);
-
-        contentRoute.editTag({
-            type: contentType.slug,
-            id: tagId
-        })
-            .then( response => {
-                assert.equal( response.tag.ID, tagId );
-                done();
-            })
-            .catch(done);
-    });
-
-    it('Should delete tag of content type', function(done) {
-        this.timeout(15000);
-
-        contentRoute.deleteTag({
-            param: {
-                type: contentType.slug,
-                id: tagId
-            }
-        }, res )
-            .then( response => {
-                assert.isTrue( response.success );
                 done();
             })
             .catch(done);
