@@ -7,6 +7,7 @@ import './component/alert';
 import './users/manager';
 import './users/edit';
 import './users/group-manager';
+import './users/edit-profile';
 import './presets/manager';
 import './presets/edit-preset';
 import './content/content-types';

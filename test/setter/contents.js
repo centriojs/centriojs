@@ -3,8 +3,6 @@
 const assert = require('chai').assert,
     _ = require('../../lib/mixin');
 
-require('../install');
-
 describe('Preset contents', () => {
     let Blog;
 
