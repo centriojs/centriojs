@@ -14,6 +14,8 @@ import './content/content-types';
 import './content/edit-content-type';
 import './content/content-manager';
 import './content/comments-manager';
+import './templates/login';
+import './templates/no-access';
 
 export default class Admin extends Template {
     constructor(props) {

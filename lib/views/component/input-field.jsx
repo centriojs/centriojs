@@ -17,13 +17,67 @@ const Input = (inputArgs, render) => {
             switch(input.type) {
                 default :
                     return <input {...input} />;
+
+                case 'checkbox' :
+                case 'radio' :
+                    if ( ! inputArgs.options ) {
+                        return null;
+                    }
+
+                    let inputs = [],
+                        keys = Object.keys(inputArgs.options);
+
+                    delete input.options;
+
+                    keys.map( key => {
+                        let inputLabel = inputArgs.options[key],
+                            checked = false;
+
+                        if ( (_.isArray(input.value) && _.contains( input.value, key ) ) || input.value === key ) {
+                            checked = true;
+                        }
+
+                        let _label = <input {...input} type={input.type} value={key} checked={checked} />,
+                            uniqKey = _.uniqueId('key');
+
+                        if ( keys.length > 1 ) {
+                            return inputs.push(<li key={uniqKey}><label>{_label} {inputLabel}</label></li>);
+                        }
+
+                        inputs.push(<label key={uniqKey}>{_label} {inputLabel}</label>);
+                    });
+
+                    if ( inputs.length > 1 ) {
+                        return <ul>{inputs}</ul>;
+                    }
+
+                    return inputs;
+
+                case 'select' :
+                    if ( ! inputArgs.choices ) {
+                        return null;
+                    }
+
+                    let choices = [];
+
+                    Object.keys(inputArgs.choices).map( key => {
+                        let value = inputArgs.choices[key];
+
+                        choices.push(
+                            <option value={key}>{value}</option>
+                        );
+                    });
+
+                    delete input.choices;
+
+                    return <select {...input}>{choices}</select>;
             }
         };
     }
 
     return (
         <div className={'input-field'}>
-            <label className={'label'}>{label}</label>
+            {inputApi.props.label && <label className={'label'}>{label}</label>}
             <div className={'input'}>
                 {render(inputArgs)}
                 {meta.error && <span className={'error'}>{meta.error}</span>}

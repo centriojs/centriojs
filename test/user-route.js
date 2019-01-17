@@ -87,17 +87,6 @@ describe('User routes', () => {
             .catch(done);
     });
 
-    it('Should delete user from the database', function(done) {
-        this.timeout(5000);
-
-        userRouter.deleteUser({param: {id: userId}}, res )
-            .then( response => {
-                assert.isTrue( response.success, true );
-                done();
-            })
-            .catch(done);
-    });
-
     it('Should update user settings', function(done) {
         global.$_POST = {
             settings: {
@@ -156,6 +145,68 @@ describe('User routes', () => {
         userRouter.deleteGroup( {param: {groupId: groupId}}, res )
             .then( response => {
                 assert.isTrue( response.success );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should get user profile for visual editing', function(done) {
+        this.timeout(5000);
+
+        userRouter.editProfile({id: userId})
+            .then( response => {
+                assert.equal( response.user.ID, userId );
+                done();
+            })
+            .catch();
+    });
+
+    it('Should set user activity via $_POST', function(done) {
+        this.timeout(5000);
+
+        global.$_POST = {
+            activity: 'Doing some test now',
+            type: 'others',
+            userId: userId
+        };
+
+        userRouter.setActivity( req, res )
+            .then( response => {
+                assert.isTrue( response.success );
+                done();
+            })
+            .catch();
+    });
+
+    it('Should get user activities', function(done) {
+        this.timeout(5000);
+
+        userRouter.getActivity( req, res )
+            .then( response => {
+                assert.isTrue( response.success );
+                assert.equal( response.activities.length, 1 );
+                done();
+            })
+            .catch(done);
+    });
+
+    it('Should delete user activities', function(done) {
+        this.timeout(5000);
+
+        userRouter.deleteActivity( {params: {id: userId}}, res )
+            .then( response => {
+                assert.isTrue( response.success );
+                done();
+            })
+            .catch();
+    })
+
+    it('Should delete user from the database', function(done) {
+        this.timeout(5000);
+
+        userRouter.deleteUser({param: {id: userId}}, res )
+            .then( response => {
+                assert.isTrue( response.success, true );
                 done();
             })
             .catch(done);

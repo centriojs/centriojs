@@ -1,6 +1,8 @@
 'use strict';
 
 import React from 'react';
+import {parseTemplate} from "./parser";
+import {getState} from "./router";
 import _ from "underscore";
 import {appEvent} from './hooks';
 
@@ -58,5 +60,15 @@ export default class Template extends React.Component {
 
     hasError() {
         return this.state.hasError;
+    }
+
+    parseTemplate( templateId, props ) {
+        let templates = getState( '__templates', {} );
+
+        if ( !! templates[templateId] ) {
+            return parseTemplate( templateId, props );
+        }
+
+        return null;
     }
 }

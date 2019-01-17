@@ -1,8 +1,8 @@
 'use strict';
 
 import React from 'react';
-import {appEvent} from '../utils/hooks';
-import Request from '../utils/request';
+import {appEvent} from './hooks';
+import Request from './request';
 import _ from 'underscore';
 
 if( 'undefined' === typeof window ) {

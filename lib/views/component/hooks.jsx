@@ -83,11 +83,41 @@ export const appEvent = {
     }
 };
 
-export const filter = {
+export const Filter = {
     on: addHook,
     off: removeHook,
     hasFilter: hasHook,
     apply: function(name, value) {
+        if ( ! Hooks[name] ) {
+            return value;
+        }
+
+        let args = _.values(arguments).slice(2),
+            filters = Hooks[name],
+            callbacks = [];
+
+        filters = _.sortBy( filters, 'priority' );
+
+        _.each(filters, (filter) => {
+            callbacks.push( filter.cb );
+        });
+
+        for( let i = 0; i < callbacks.length; i++ ) {
+            let cb = callbacks[i],
+                _args = [value].concat(args);
+
+            value = cb.apply( cb, _args );
+        }
+
+        return value;
+    }
+};
+
+export const Component = {
+    on: addHook,
+    off: removeHook,
+    hasComponent: hasHook,
+    render: function(name, value) {
         if ( ! Hooks[name] ) {
             return value;
         }

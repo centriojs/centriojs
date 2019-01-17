@@ -7,6 +7,9 @@ import './install/install';
 import './templates/archive';
 import './templates/single';
 import './templates/search-results';
+import './templates/login';
+import './templates/no-access';
+import './users/login-form';
 
 export default class Index extends Template {
     constructor(props) {

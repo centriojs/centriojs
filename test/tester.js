@@ -1,23 +1,11 @@
-let vm = require('vm');
+let path = require('path');
 
+global.ABSPATH = path.resolve( __dirname, '../../demo/app-mysql');
+require('./mysql/config');
 require('../lib/load');
 
-let args = {
-    require: require,
-    output: ''
-};
-
-Object.keys(global).map( key => {
-    args[key] = global[key];
-});
-
-let sandbox = vm.createContext(args);
-
-vm.runInContext(`
-'use strict';
-
-output = typeof deleteEndPoint;
-
-`, sandbox );
-
-console.log(sandbox.output);
+getCurrentTheme()
+.then( info => {
+    //console.log(info);
+})
+.catch();

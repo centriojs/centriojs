@@ -3,7 +3,6 @@
 const assert = require('chai').assert;
 
 describe('Drop all tables', function() {
-
     it('Should delete all content types and drop content_types table', function(done) {
         this.timeout(55000);
 
@@ -22,7 +21,8 @@ describe('Drop all tables', function() {
             .catch(done);
     });
 
-    let tables = ['users', 'user_group', 'user_settings', 'settings', 'presets', 'endpoint', 'content_types', 'type_properties'];
+    let tables = ['users', 'user_group', 'user_settings', 'user_activity',
+        'settings', 'presets', 'endpoint', 'content_types', 'type_properties'];
 
     for( let i = 0; i < tables.length; i++ ) {
         let table = tables[i];
