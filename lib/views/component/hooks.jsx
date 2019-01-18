@@ -7,11 +7,13 @@ const Hooks = {};
 /**
 * Adds a callback function to a given hook name.
 *
-* @param {string} name
+* @param {string} name          The name of an action hook that is use to trigger and execute the attached callable
+ *                              functions or methods.
 * @param {function} cb
-* @param {int} priority
-* @param {string} key
-* @param {boolean} once        - Whether to trigger the callback hook only once.
+* @param {int} priority         Optional.
+* @param {string} key           Optional. A unique identifier use to identify the attached callable function. Useful
+ *                              for un-named function format.
+* @param {boolean} once         If true, the attached will only called once.
 * @returns {boolean}
 */
 const addHook = function (name, cb) {
@@ -37,7 +39,13 @@ const addHook = function (name, cb) {
     return true;
 };
 
-const removeHook = (name, key) => {
+/**
+ * Remove the attached callable function from the list of executables.
+ *
+ * @param {string} name
+ * @param {any}key
+ */
+const removeHook = function(name, key) {
     if ( ! Hooks[name] || ! Hooks[name][key] ) {
         return;
     }
@@ -45,16 +53,14 @@ const removeHook = (name, key) => {
     delete Hooks[name][key];
 };
 
+/**
+ * Check whether the given an actionable has attached callbacks.
+ *
+ * @param {string} name
+ * @returns {boolean}
+ */
 const hasHook = name => {
-    return Hooks[name];
-};
-
-const removeAllHook = name => {
-    if ( ! Hooks[name] ) {
-        return;
-    }
-
-    delete Hooks[name];
+    return !! Hooks[name];
 };
 
 export const appEvent = {
@@ -117,12 +123,12 @@ export const Component = {
     on: addHook,
     off: removeHook,
     hasComponent: hasHook,
-    render: function(name, value) {
+    render: function(name) {
         if ( ! Hooks[name] ) {
-            return value;
+            return null;
         }
 
-        let args = _.values(arguments).slice(2),
+        let args = _.values(arguments).slice(1),
             filters = Hooks[name],
             callbacks = [];
 
@@ -132,13 +138,16 @@ export const Component = {
             callbacks.push( filter.cb );
         });
 
-        for( let i = 0; i < callbacks.length; i++ ) {
-            let cb = callbacks[i],
-                _args = [value].concat(args);
+        let values = [];
 
-            value = cb.apply( cb, _args );
+        for( let i = 0; i < callbacks.length; i++ ) {
+            let cb = callbacks[i];
+
+            let value = cb.apply( cb, args );
+
+            values.push(value);
         }
 
-        return value;
+        return values;
     }
 };

@@ -21,7 +21,7 @@ class LoginForm extends Template {
 
     form({handleSubmit, form}) {
         return (
-            <form method={'post'} action={'/login'} className={'login-form'} onSubmit={handleSubmit}>
+            <form method={'post'} className={'login-form'} onSubmit={handleSubmit}>
                 <div>
                     <InputField {...{
                         formApi: form,
@@ -34,11 +34,13 @@ class LoginForm extends Template {
                         name: 'pwd',
                         label: <Lang text={'Password'} />,
                         required: true,
-                        type: 'email'
+                        type: 'password'
                     }} />
                     <InputField {...{
+                        formApi: form,
                         name: 'remember',
                         value: 1,
+                        type: 'checkbox',
                         options: {
                             1: <Lang text={'Remember me'} />
                         }
@@ -53,8 +55,8 @@ class LoginForm extends Template {
                      *
                      * @param {object} formApi
                      * @param {object} LoginForm instance
-                     */
-                    Component.render('afterLoginForm', form, this)}
+                     **/
+                     Component.render('afterLoginForm', form, this )}
             </form>
         );
     }

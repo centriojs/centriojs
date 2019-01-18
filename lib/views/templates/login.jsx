@@ -3,6 +3,7 @@
 import React from 'react';
 import Template from '../component/template';
 import {addComponent} from "../component/component";
+import {getState} from "../component/router";
 
 class LoginPage extends Template {
     render() {
@@ -10,7 +11,7 @@ class LoginPage extends Template {
             return null;
         }
 
-        return this.parseTemplate( 'login' );
+        return this.parseTemplate( '/login', this.state );
     }
 }
 addComponent( 'LoginPage', <LoginPage/> );

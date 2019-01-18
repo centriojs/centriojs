@@ -66,7 +66,7 @@ export default class Template extends React.Component {
         let templates = getState( '__templates', {} );
 
         if ( !! templates[templateId] ) {
-            return parseTemplate( templateId, props );
+            return parseTemplate( templates[templateId], props );
         }
 
         return null;

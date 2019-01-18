@@ -1,6 +1,7 @@
 'use strict';
 
 import React from 'react';
+import _ from 'underscore';
 
 const Components = {};
 
@@ -8,12 +9,14 @@ export const addComponent = (name, template) => {
     Components[name] = template;
 };
 
-export const getComponent = (name, props) => {
+export const getComponent = function( name, props ) {
     if ( ! Components[name] ) {
         return null;
     }
 
-    return React.cloneElement(Components[name], props);
+    let children = arguments[2] || false;
+
+    return React.cloneElement( Components[name], props, children );
 };
 
 export const removeComponent = name => {

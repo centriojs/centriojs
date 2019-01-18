@@ -1,7 +1,8 @@
 'use strict';
 
 import React from 'react';
-import {getComponents} from "./component";
+import {getComponents, getComponent} from "./component";
+import _ from 'underscore';
 
 let id = Date.now();
 
@@ -11,11 +12,15 @@ class Text extends React.Component {
     }
 }
 
-class TemplateParser {
-    constructor( props, components, template ) {
-        this.components = components || {};
-        this.props = props || {};
-        this.template = template || {};
+class TemplateParser extends React.Component {
+    constructor(props) {
+        super(props);
+
+        this.state = {
+            components: this.props.components || {},
+            props: this.props.props || {},
+            template: this.props.template || {}
+        };
     }
 
     parseAttr(attr) {
@@ -53,7 +58,7 @@ class TemplateParser {
     }
 
     iterate(node) {
-        let components = this.components,
+        let components = this.state.components,
             children = [];
 
         if ( node.children ) {
@@ -62,32 +67,27 @@ class TemplateParser {
             });
         }
 
-        let _node = '',
-            name = node.name,
+        let name = node.name,
             attr = node.attributes || {};
 
         attr = this.parseAttr(attr);
-        attr.key = 'node-' + id++;
+        attr.key = _.uniqueId( 'node-' );
 
-        if ( components[node.name] ) {
-            let compo = components[name];
-
-            _node = React.cloneElement( compo, attr, children );
-        } else {
-            if ( '#text' === name ) {
-                _node = <Text key={'node-' + id++}>{node.text}</Text>;
-            } else {
-                _node = React.createElement( name, attr, children );
-            }
+        if ( components[name] ) {
+            return getComponent( name, attr, children );
         }
 
-        return _node;
+        if ( '#text' === name ) {
+            return <Text key={'node-' + id++}>{node.text}</Text>;
+        }
+
+        return React.createElement( name, attr, children );
     }
 
     render() {
         let children = [];
 
-        Object.values(this.template).map( child => {
+        Object.values(this.state.template).map( child => {
             children.push(this.iterate(child));
         });
 
@@ -96,13 +96,10 @@ class TemplateParser {
 }
 
 export const parseTemplate = (template, props) => {
-    return new TemplateParser( props, getComponents(), template );
-    /**
     return <TemplateParser {...{
         template: template,
         components: getComponents(),
         key: _.uniqueId('tpl-key'),
         props: props || {}
     }} />;
-     **/
 };

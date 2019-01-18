@@ -5,8 +5,8 @@ import Lang from './lang';
 import FormField from '../form-api/field';
 import _ from 'underscore';
 
-const Input = (inputArgs, render) => {
-    let {inputApi, meta} = inputArgs;
+const Input = (inputArgs, render, input) => {
+    let {inputApi, meta} = input;
 
     let label = inputApi.props.label,
         desc = inputApi.props.description;
@@ -14,8 +14,9 @@ const Input = (inputArgs, render) => {
     if ( ! render ) {
 
         render = ({input}) => {
-            switch(input.type) {
+            switch(inputArgs.type) {
                 default :
+                    input.type = inputArgs.type;
                     return <input {...input} />;
 
                 case 'checkbox' :
@@ -37,7 +38,7 @@ const Input = (inputArgs, render) => {
                             checked = true;
                         }
 
-                        let _label = <input {...input} type={input.type} value={key} checked={checked} />,
+                        let _label = <input {...input} type={inputArgs.type} value={key} checked={checked} />,
                             uniqKey = _.uniqueId('key');
 
                         if ( keys.length > 1 ) {
@@ -79,7 +80,7 @@ const Input = (inputArgs, render) => {
         <div className={'input-field'}>
             {inputApi.props.label && <label className={'label'}>{label}</label>}
             <div className={'input'}>
-                {render(inputArgs)}
+                {render(input)}
                 {meta.error && <span className={'error'}>{meta.error}</span>}
                 {desc && <p className={'description'}>{desc}</p>}
             </div>
@@ -98,7 +99,7 @@ const InputField = props => {
     }
 
     return <Field {...properties} {...{
-        render: e => Input(e, props.render)
+        render: e => Input( properties, props.render, e )
     }} />;
 };
 
