@@ -24,15 +24,10 @@ export default class Index extends Template {
             return null;
         }
 
-        if ( ! this.props.templateNow ) {
-            // @todo: Set default
-            return null;
-        }
-
         let template = getComponent( this.props.templateNow, this.properties );
-        if ( ! template ) {
-            // @todo: ??
-            return null;
+        if ( ! template && this.props.path ) {
+            // try locating the template path
+            return this.parseTemplate( this.props.path, this.properties );
         }
 
         return template;
