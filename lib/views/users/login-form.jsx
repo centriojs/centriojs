@@ -5,8 +5,10 @@ import Template from '../component/template';
 import FormApi from '../form-api/form';
 import {addComponent} from "../component/component";
 import InputField from '../component/input-field';
+import Alert from '../component/alert';
 import Lang from '../component/lang';
 import {Component} from "../component/hooks";
+import {getState} from "../component/router";
 
 class LoginForm extends Template {
     validateEmail(email) {
@@ -17,16 +19,23 @@ class LoginForm extends Template {
         return undefined;
     }
 
-    onSubmit( values, formApi ) {}
+    onSubmit( values, formApi ) {
+
+    }
 
     form({handleSubmit, form}) {
+        let post = getState( '$_POST', {} ),
+            message = getState( 'message' );
+
         return (
             <form method={'post'} className={'login-form'} onSubmit={handleSubmit}>
+                <Alert type={'error'} message={message} />
                 <div>
                     <InputField {...{
                         formApi: form,
                         name: 'email',
                         label: <Lang text={'Email Address'} />,
+                        value: post && post.email,
                         validate: this.validateEmail.bind(this)
                     }} />
                     <InputField {...{
