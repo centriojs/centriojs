@@ -10,6 +10,7 @@ import './users/edit';
 import './users/group-manager';
 import './users/edit-profile';
 import './users/users-list-table';
+import './users/list-filter';
 import './presets/manager';
 import './presets/edit-preset';
 import './content/content-types';

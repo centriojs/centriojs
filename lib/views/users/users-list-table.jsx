@@ -12,12 +12,20 @@ export default class UsersListTable extends ListTable {
         this.state.tableId = 'users';
         this.state.items = getState('users', [] );
         this.state.columns = {
-            ID: 'ID',
+            ID: '',
             name: 'Name',
             email: 'Email',
             group: 'Group',
             date: 'Registered'
         };
+    }
+
+    column_name(user) {
+        return user.display;
+    }
+
+    column_email(user) {
+        return user.email;
     }
 }
 addComponent( 'UsersListTable', <UsersListTable/> );

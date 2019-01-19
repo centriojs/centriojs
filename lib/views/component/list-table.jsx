@@ -12,8 +12,7 @@ export default class ListTable extends Template {
         this.state = {
             id: props.tableId,
             items: props.items || [],
-            columns: props.columns || {},
-            totalItems: props.totalItems || 0
+            columns: props.columns || {}
         };
     }
 
@@ -39,7 +38,8 @@ export default class ListTable extends Template {
     }
 
     rowItems() {
-        let items = [];
+        let items = [],
+            columns = this.getColumns();
 
         this.state.items.map( item => {
             let attr = {
@@ -52,10 +52,37 @@ export default class ListTable extends Template {
                 attr.id = item.id;
             }
 
-            items.push(<tr {...attr}><td>ITEM HERE</td></tr>);
+            let itemColumns = [];
+
+            _.keys(columns).map( key => {
+                let column = null,
+                    columnKey = 'column_' + key;
+
+                // Check properties first
+                if ( this.props[columnKey] ) {
+                    column = this.props[columnKey].apply( this.props[columnKey], [item, this] );
+                } else if ( this[columnKey] ) {
+                    column = this[columnKey].apply( this, [item] );
+                } else {
+                    column = Filter.apply( `${this.state.tableId}_columnValue`, '', item, this );
+                }
+
+                let columnAttr = {
+                    className: 'column-' + key,
+                    key: _.uniqueId('column' )
+                };
+
+                itemColumns.push(<td {...columnAttr}>{column}</td>);
+            });
+
+            items.push(<tr {...attr}>{itemColumns}</tr>);
         });
 
         return items;
+    }
+
+    column_ID(item) {
+        return <input type={'checkbox'} value={item.ID} />;
     }
 
     render() {
@@ -64,7 +91,7 @@ export default class ListTable extends Template {
         }
 
         let attr = {
-            className: 'list-table list-table-' + this.tableId
+            className: 'list-table list-table-' + this.state.tableId
         };
 
         return (
