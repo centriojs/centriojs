@@ -78,6 +78,15 @@ class TemplateParser extends React.Component {
             attr.onChange = _.noop;
         }
 
+        if ( 'textarea' === name && children ) {
+            attr.defaultValue = children.join('');
+            children = false;
+        }
+
+        if ( 'option' === name && children ) {
+            children = children[0].props.children;
+        }
+
         if ( components[name] ) {
             return getComponent( name, attr, children );
         }
@@ -86,7 +95,7 @@ class TemplateParser extends React.Component {
             return <Text key={'node-' + id++}>{node.text}</Text>;
         }
 
-        if ( node.isSelfClosing ) {
+        if ( node.isSelfClosing || ! children ) {
             return React.createElement( name, attr );
         }
 
