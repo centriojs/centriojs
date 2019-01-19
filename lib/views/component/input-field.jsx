@@ -65,7 +65,7 @@ const Input = (inputArgs, render, input) => {
                         let value = inputArgs.choices[key];
 
                         choices.push(
-                            <option value={key}>{value}</option>
+                            <option value={key} key={_.uniqueId('option')}>{value}</option>
                         );
                     });
 
