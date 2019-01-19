@@ -79,7 +79,7 @@ class TemplateParser extends React.Component {
         }
 
         if ( 'textarea' === name && children ) {
-            attr.defaultValue = children.join('');
+            attr.defaultValue = children[0].props.children;
             children = false;
         }
 
