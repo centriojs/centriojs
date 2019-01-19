@@ -73,6 +73,11 @@ class TemplateParser extends React.Component {
         attr = this.parseAttr(attr);
         attr.key = _.uniqueId( 'node-' );
 
+        // If it has `checked` attribute, set an onchange
+        if ( attr.checked ) {
+            attr.onChange = _.noop;
+        }
+
         if ( components[name] ) {
             return getComponent( name, attr, children );
         }
