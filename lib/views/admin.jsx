@@ -4,7 +4,7 @@ import React from 'react';
 import Template from './component/template';
 import {getComponent} from "./component/component";
 import './component/alert';
-import './users/manager';
+//import './users/manager';
 import './users/edit';
 import './users/group-manager';
 import './users/edit-profile';

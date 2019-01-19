@@ -81,6 +81,10 @@ class TemplateParser extends React.Component {
             return <Text key={'node-' + id++}>{node.text}</Text>;
         }
 
+        if ( node.isSelfClosing ) {
+            return React.createElement( name, attr );
+        }
+
         return React.createElement( name, attr, children );
     }
 
