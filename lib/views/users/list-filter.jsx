@@ -27,10 +27,14 @@ export default class UsersListFilter extends Template {
                     label: <Lang text={'Status'} />,
                     type: 'select',
                     choices: {
+                        any: 'Any',
                         online: 'Online',
                         offline: 'Offline'
                     }
                 }} />
+                <button type={'submit'}>
+                    <Lang text={'Filter'} />
+                </button>
             </form>
         );
     }
